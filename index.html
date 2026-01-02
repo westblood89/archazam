@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCHAZAM - Arkeolojik Tarama</title>
     <style>
-        /* Tasarım Kısmı: Takım Renginiz Lacivert */
+        /* Tasarım: Lacivert ve Sarı Tema */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #001f3f; /* Lacivert */
@@ -14,76 +14,119 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start; /* Yukarıdan başlasın */
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
         h1 {
             font-size: 2rem;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: 2px;
             text-transform: uppercase;
+            color: #FFDC00; /* Sarı */
         }
 
         .slogan {
             font-size: 0.9rem;
-            color: #ddd;
-            margin-bottom: 20px;
+            color: #ccc;
+            margin-bottom: 30px;
             font-style: italic;
         }
 
-        #webcam-container {
-            border: 4px solid #FFDC00; /* Sarı Çerçeve */
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 220, 0, 0.5);
+        /* Fotoğrafın görüneceği alan */
+        #image-preview-container {
             width: 300px;
             height: 300px;
-            background-color: #000;
-        }
-
-        #label-container {
-            margin-top: 20px;
-            width: 90%;
-            max-width: 300px;
-        }
-
-        .result-bar {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            padding: 10px;
+            border: 4px dashed #FFDC00;
+            border-radius: 15px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: rgba(0,0,0,0.3);
+            margin-bottom: 20px;
         }
 
-        .bar-fill {
-            height: 10px;
-            background-color: #FFDC00;
-            border-radius: 5px;
-            margin-top: 5px;
-            width: 0%;
-            transition: width 0.2s;
+        #image-preview {
+            max-width: 100%;
+            max-height: 100%;
+            display: none; /* Başlangıçta gizli */
         }
 
-        button {
+        /* Placeholder yazı */
+        #placeholder-text {
+            color: #aaa;
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+
+        /* Buton Tasarımı */
+        .custom-file-upload {
+            display: inline-block;
             background-color: #FFDC00;
             color: #001f3f;
-            border: none;
             padding: 15px 30px;
             font-size: 1.2rem;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(255, 220, 0, 0.4);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
         }
 
-        button:active {
+        .custom-file-upload:active {
             transform: scale(0.95);
         }
+
+        /* Gerçek input'u gizliyoruz çünkü çirkin */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Sonuç Çubukları */
+        #label-container {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .result-bar {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .bar-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .bar-bg {
+            width: 100%;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background-color: #FFDC00;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+        
+        #loading {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+
     </style>
 </head>
 <body>
@@ -91,81 +134,117 @@
     <h1>Archazam</h1>
     <div class="slogan">Tarihin Shazam'ı</div>
 
-    <div id="webcam-container"></div>
-    
-    <div id="label-container"></div>
+    <div id="image-preview-container">
+        <span id="placeholder-text">Analiz edilecek fotoğraf yok</span>
+        <img id="image-preview" src="" alt="Önizleme" />
+    </div>
 
-    <button type="button" onclick="init()">TARAMAYI BAŞLAT</button>
+    <label for="image-upload" class="custom-file-upload">
+        📷 FOTOĞRAF ÇEK / YÜKLE
+    </label>
+    <input type="file" id="image-upload" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+
+    <div id="loading">Sistem Yükleniyor...</div>
+
+    <div id="label-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
         // ---------------------------------------------------------
-        // DİKKAT: AŞAĞIDAKİ LİNKİ KENDİ EĞİTTİĞİN MODEL İLE DEĞİŞTİR!
+        // BURAYA KENDİ EĞİTTİĞİN MODEL LİNKİNİ YAPIŞTIR!
         const URL = "https://teachablemachine.withgoogle.com/models/stNO7PxAJ/"; 
         // ---------------------------------------------------------
 
-        let model, webcam, labelContainer, maxPredictions;
+        let model, labelContainer, maxPredictions;
+
+        // Sayfa açılınca modeli yükle
+        init();
 
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
 
-            // Modeli yükle
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
+            try {
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                
+                // Yüklendi yazısını kaldır
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("loading").innerText = "";
 
-            // Kamerayı ayarla
-            const flip = true; 
-            webcam = new tmImage.Webcam(300, 300, flip); 
-            await webcam.setup(); // Kamera izni iste
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            // Kamerayı ekrana bas
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            
-            // Sonuç etiketlerini hazırla
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { 
-                let div = document.createElement("div");
-                div.className = "result-bar";
-                div.innerHTML = `<span>Sınıf ${i}</span> <span style="font-weight:bold">0%</span>`;
-                // Altına doluluk çubuğu ekleyelim (görsel efekt için)
-                let bar = document.createElement("div");
-                bar.className = "bar-fill"; 
-                div.appendChild(bar); 
-                labelContainer.appendChild(div);
+                // Sonuç çubuklarını hazırla (boş olarak)
+                labelContainer = document.getElementById("label-container");
+                for (let i = 0; i < maxPredictions; i++) { 
+                    // HTML Yapısı
+                    let div = document.createElement("div");
+                    div.className = "result-bar";
+                    div.innerHTML = `
+                        <div class="bar-text">
+                            <span>Sınıf ${i}</span>
+                            <span>%0</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill"></div>
+                        </div>
+                    `;
+                    labelContainer.appendChild(div);
+                }
+            } catch (error) {
+                document.getElementById("loading").innerText = "Hata: Model yüklenemedi! Linki kontrol et.";
             }
-            
-            // Butonu gizle
-            document.querySelector("button").style.display = "none";
         }
 
-        async function loop() {
-            webcam.update(); // Kamerayı güncelle
-            await predict();
-            window.requestAnimationFrame(loop);
+        // Fotoğraf seçilince çalışacak fonksiyon
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = async function(e) {
+                    const imgElement = document.getElementById("image-preview");
+                    const placeholder = document.getElementById("placeholder-text");
+                    
+                    // Resmi ekrana bas
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = "block";
+                    placeholder.style.display = "none";
+
+                    // Resim yüklenince tahmin et
+                    imgElement.onload = async function() {
+                        await predict(imgElement);
+                    }
+                }
+                
+                reader.readAsDataURL(file);
+            }
         }
 
-        async function predict() {
-            // Tahmin et
-            const prediction = await model.predict(webcam.canvas);
+        // Tahmin Fonksiyonu
+        async function predict(imageElement) {
+            const prediction = await model.predict(imageElement);
             
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction = prediction[i].className;
-                const probability = (prediction[i].probability * 100).toFixed(1); // Yüzdeye çevir
+                const probability = (prediction[i].probability * 100).toFixed(1);
                 
-                // HTML'i güncelle
+                // Barları güncelle
                 const barContainer = labelContainer.childNodes[i];
-                barContainer.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; width:100%;">
-                        <span>${classPrediction}</span>
-                        <span>%${probability}</span>
-                    </div>
-                    <div class="bar-fill" style="width:${probability}%"></div>
-                `;
+                
+                // İsim ve Yüzdeyi güncelle
+                barContainer.querySelector(".bar-text span:first-child").innerText = classPrediction.toUpperCase();
+                barContainer.querySelector(".bar-text span:last-child").innerText = "%" + probability;
+                
+                // Bar doluluğunu güncelle
+                barContainer.querySelector(".bar-fill").style.width = probability + "%";
+                
+                // Eğer %80'den büyükse rengi yeşil yap (görsel efekt)
+                if(probability > 80) {
+                     barContainer.querySelector(".bar-fill").style.backgroundColor = "#2ECC40"; // Yeşil
+                } else {
+                     barContainer.querySelector(".bar-fill").style.backgroundColor = "#FFDC00"; // Sarı
+                }
             }
         }
     </script>
