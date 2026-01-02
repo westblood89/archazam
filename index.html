@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARCHAZAM - Arkeolojik Tarama</title>
+    <title>ARCHAZAM - V2</title>
     <style>
-        /* Tasarım: Lacivert ve Sarı Tema */
+        /* Tasarım */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #001f3f; /* Lacivert */
@@ -14,28 +14,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Yukarıdan başlasın */
             min-height: 100vh;
             margin: 0;
             padding: 20px;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #FFDC00; /* Sarı */
+        h1 { color: #FFDC00; margin-bottom: 5px; text-transform: uppercase; }
+        .slogan { font-style: italic; color: #ccc; margin-bottom: 20px; }
+
+        /* Durum Mesajı Kutusu */
+        #status-msg {
+            background-color: #0074D9;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: block;
+            width: 90%;
+            max-width: 350px;
         }
 
-        .slogan {
-            font-size: 0.9rem;
-            color: #ccc;
-            margin-bottom: 30px;
-            font-style: italic;
-        }
-
-        /* Fotoğrafın görüneceği alan */
+        /* Foto Alanı */
         #image-preview-container {
             width: 300px;
             height: 300px;
@@ -48,85 +48,43 @@
             background-color: rgba(0,0,0,0.3);
             margin-bottom: 20px;
         }
+        #image-preview { max-width: 100%; max-height: 100%; display: none; }
+        #placeholder-text { color: #aaa; }
 
-        #image-preview {
-            max-width: 100%;
-            max-height: 100%;
-            display: none; /* Başlangıçta gizli */
-        }
+        /* Buton Grubu */
+        .btn-group { display: flex; gap: 10px; flex-direction: column; width: 100%; max-width: 300px; }
 
-        /* Placeholder yazı */
-        #placeholder-text {
-            color: #aaa;
-            font-size: 0.9rem;
-            padding: 20px;
-        }
-
-        /* Buton Tasarımı */
-        .custom-file-upload {
-            display: inline-block;
-            background-color: #FFDC00;
-            color: #001f3f;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+        .custom-file-upload, .analyze-btn {
+            padding: 15px;
+            font-size: 1.1rem;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 220, 0, 0.4);
-            margin-bottom: 20px;
-            transition: transform 0.2s;
+            border: none;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .custom-file-upload:active {
-            transform: scale(0.95);
-        }
-
-        /* Gerçek input'u gizliyoruz çünkü çirkin */
-        input[type="file"] {
-            display: none;
-        }
-
-        /* Sonuç Çubukları */
-        #label-container {
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .result-bar {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            padding: 10px;
-        }
-
-        .bar-text {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 1rem;
-        }
-
-        .bar-bg {
-            width: 100%;
-            height: 10px;
-            background-color: #333;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background-color: #FFDC00;
-            width: 0%;
-            transition: width 0.5s ease-out;
+        .custom-file-upload { background-color: #fff; color: #001f3f; }
+        
+        .analyze-btn { 
+            background-color: #FFDC00; 
+            color: #001f3f; 
+            opacity: 0.5; /* Başlangıçta sönük */
+            pointer-events: none; /* Tıklanamaz */
         }
         
-        #loading {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #00d2ff;
-        }
+        /* Aktif Buton Hali */
+        .analyze-btn.active { opacity: 1; pointer-events: all; transform: scale(1.05); }
 
+        input[type="file"] { display: none; }
+
+        /* Sonuç Barları */
+        #label-container { width: 100%; max-width: 350px; margin-top: 20px; }
+        .result-bar { background-color: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 10px; padding: 10px; }
+        .bar-text { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .bar-bg { width: 100%; height: 10px; background-color: #333; border-radius: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; background-color: #FFDC00; width: 0%; transition: width 0.5s ease-out; }
     </style>
 </head>
 <body>
@@ -134,17 +92,23 @@
     <h1>Archazam</h1>
     <div class="slogan">Tarihin Shazam'ı</div>
 
+    <div id="status-msg">Sistem Yükleniyor...</div>
+
     <div id="image-preview-container">
-        <span id="placeholder-text">Analiz edilecek fotoğraf yok</span>
-        <img id="image-preview" src="" alt="Önizleme" />
+        <span id="placeholder-text">Fotoğraf Yok</span>
+        <img id="image-preview" src="" />
     </div>
 
-    <label for="image-upload" class="custom-file-upload">
-        📷 FOTOĞRAF ÇEK / YÜKLE
-    </label>
-    <input type="file" id="image-upload" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+    <div class="btn-group">
+        <label for="image-upload" class="custom-file-upload">
+            📷 FOTOĞRAF SEÇ / ÇEK
+        </label>
+        <input type="file" id="image-upload" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
 
-    <div id="loading">Sistem Yükleniyor...</div>
+        <button id="analyze-button" class="analyze-btn" onclick="manualPredict()">
+            🔍 ANALİZ ET
+        </button>
+    </div>
 
     <div id="label-container"></div>
 
@@ -152,14 +116,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // ---------------------------------------------------------
-        // BURAYA KENDİ EĞİTTİĞİN MODEL LİNKİNİ YAPIŞTIR!
+        // =========================================================
+        // LÜTFEN KENDİ LİNKİNİ BURAYA YAPIŞTIRMAYI UNUTMA!
         const URL = "https://teachablemachine.withgoogle.com/models/stNO7PxAJ/"; 
-        // ---------------------------------------------------------
+        // =========================================================
 
         let model, labelContainer, maxPredictions;
+        const statusMsg = document.getElementById("status-msg");
+        const analyzeBtn = document.getElementById("analyze-button");
 
-        // Sayfa açılınca modeli yükle
+        // Başlangıç
         init();
 
         async function init() {
@@ -170,82 +136,76 @@
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
                 
-                // Yüklendi yazısını kaldır
-                document.getElementById("loading").style.display = "none";
-                document.getElementById("loading").innerText = "";
+                statusMsg.innerText = "✅ Model Hazır! Fotoğraf Yükle.";
+                statusMsg.style.backgroundColor = "#2ECC40"; // Yeşil
 
-                // Sonuç çubuklarını hazırla (boş olarak)
+                // Sonuç kutularını boş oluştur
                 labelContainer = document.getElementById("label-container");
                 for (let i = 0; i < maxPredictions; i++) { 
-                    // HTML Yapısı
-                    let div = document.createElement("div");
-                    div.className = "result-bar";
-                    div.innerHTML = `
-                        <div class="bar-text">
-                            <span>Sınıf ${i}</span>
-                            <span>%0</span>
-                        </div>
-                        <div class="bar-bg">
-                            <div class="bar-fill"></div>
-                        </div>
-                    `;
-                    labelContainer.appendChild(div);
+                    labelContainer.innerHTML += `
+                        <div class="result-bar">
+                            <div class="bar-text"><span>Sınıf ${i}</span><span>%0</span></div>
+                            <div class="bar-bg"><div class="bar-fill"></div></div>
+                        </div>`;
                 }
             } catch (error) {
-                document.getElementById("loading").innerText = "Hata: Model yüklenemedi! Linki kontrol et.";
+                statusMsg.innerText = "❌ HATA: Model Yüklenemedi! Linki Kontrol Et.";
+                statusMsg.style.backgroundColor = "#FF4136"; // Kırmızı
+                console.error(error);
             }
         }
 
-        // Fotoğraf seçilince çalışacak fonksiyon
-        async function handleImageUpload(event) {
+        // Fotoğraf Yükleme Fonksiyonu
+        function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                
-                reader.onload = async function(e) {
+                reader.onload = function(e) {
                     const imgElement = document.getElementById("image-preview");
-                    const placeholder = document.getElementById("placeholder-text");
-                    
-                    // Resmi ekrana bas
                     imgElement.src = e.target.result;
                     imgElement.style.display = "block";
-                    placeholder.style.display = "none";
-
-                    // Resim yüklenince tahmin et
-                    imgElement.onload = async function() {
-                        await predict(imgElement);
-                    }
+                    document.getElementById("placeholder-text").style.display = "none";
+                    
+                    // Foto yüklendiği için butonu aktif et
+                    statusMsg.innerText = "Hazır! Analiz Et butonuna bas.";
+                    statusMsg.style.backgroundColor = "#0074D9"; // Mavi
+                    analyzeBtn.classList.add("active"); // Butonu parlat
                 }
-                
                 reader.readAsDataURL(file);
             }
         }
 
-        // Tahmin Fonksiyonu
-        async function predict(imageElement) {
-            const prediction = await model.predict(imageElement);
+        // Tıklayınca Çalışan Analiz Fonksiyonu
+        async function manualPredict() {
+            if (!model) return;
             
+            statusMsg.innerText = "⏳ Analiz Ediliyor...";
+            const imgElement = document.getElementById("image-preview");
+            
+            const prediction = await model.predict(imgElement);
+            
+            // Sonuçları Yazdır
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction = prediction[i].className;
                 const probability = (prediction[i].probability * 100).toFixed(1);
                 
-                // Barları güncelle
-                const barContainer = labelContainer.childNodes[i];
-                
-                // İsim ve Yüzdeyi güncelle
-                barContainer.querySelector(".bar-text span:first-child").innerText = classPrediction.toUpperCase();
-                barContainer.querySelector(".bar-text span:last-child").innerText = "%" + probability;
-                
-                // Bar doluluğunu güncelle
-                barContainer.querySelector(".bar-fill").style.width = probability + "%";
-                
-                // Eğer %80'den büyükse rengi yeşil yap (görsel efekt)
-                if(probability > 80) {
-                     barContainer.querySelector(".bar-fill").style.backgroundColor = "#2ECC40"; // Yeşil
-                } else {
-                     barContainer.querySelector(".bar-fill").style.backgroundColor = "#FFDC00"; // Sarı
+                const barContainer = labelContainer.childNodes[i]; // Divi bul
+                if(barContainer) { // Hata önleme
+                     // Yazıları güncelle
+                    const textSpans = barContainer.querySelectorAll(".bar-text span");
+                    textSpans[0].innerText = classPrediction.toUpperCase();
+                    textSpans[1].innerText = "%" + probability;
+                    
+                    // Çubuğu güncelle
+                    const fill = barContainer.querySelector(".bar-fill");
+                    fill.style.width = probability + "%";
+                    
+                    // Yüksek ihtimal ise yeşil yap
+                    if(probability > 80) fill.style.backgroundColor = "#2ECC40";
+                    else fill.style.backgroundColor = "#FFDC00";
                 }
             }
+            statusMsg.innerText = "✅ Sonuç Bulundu!";
         }
     </script>
 </body>
