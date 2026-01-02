@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCHAZAM - Arkeolojik Tarama</title>
+    <style>
+        /* Tasarım Kısmı: Takım Renginiz Lacivert */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #001f3f; /* Lacivert */
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .slogan {
+            font-size: 0.9rem;
+            color: #ddd;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        #webcam-container {
+            border: 4px solid #FFDC00; /* Sarı Çerçeve */
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 220, 0, 0.5);
+            width: 300px;
+            height: 300px;
+            background-color: #000;
+        }
+
+        #label-container {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .result-bar {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bar-fill {
+            height: 10px;
+            background-color: #FFDC00;
+            border-radius: 5px;
+            margin-top: 5px;
+            width: 0%;
+            transition: width 0.2s;
+        }
+
+        button {
+            background-color: #FFDC00;
+            color: #001f3f;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Archazam</h1>
+    <div class="slogan">Tarihin Shazam'ı</div>
+
+    <div id="webcam-container"></div>
+    
+    <div id="label-container"></div>
+
+    <button type="button" onclick="init()">TARAMAYI BAŞLAT</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <script type="text/javascript">
+        // ---------------------------------------------------------
+        // DİKKAT: AŞAĞIDAKİ LİNKİ KENDİ EĞİTTİĞİN MODEL İLE DEĞİŞTİR!
+        const URL = "https://teachablemachine.withgoogle.com/models/stNO7PxAJ/"; 
+        // ---------------------------------------------------------
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // Modeli yükle
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Kamerayı ayarla
+            const flip = true; 
+            webcam = new tmImage.Webcam(300, 300, flip); 
+            await webcam.setup(); // Kamera izni iste
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // Kamerayı ekrana bas
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            
+            // Sonuç etiketlerini hazırla
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { 
+                let div = document.createElement("div");
+                div.className = "result-bar";
+                div.innerHTML = `<span>Sınıf ${i}</span> <span style="font-weight:bold">0%</span>`;
+                // Altına doluluk çubuğu ekleyelim (görsel efekt için)
+                let bar = document.createElement("div");
+                bar.className = "bar-fill"; 
+                div.appendChild(bar); 
+                labelContainer.appendChild(div);
+            }
+            
+            // Butonu gizle
+            document.querySelector("button").style.display = "none";
+        }
+
+        async function loop() {
+            webcam.update(); // Kamerayı güncelle
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            // Tahmin et
+            const prediction = await model.predict(webcam.canvas);
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className;
+                const probability = (prediction[i].probability * 100).toFixed(1); // Yüzdeye çevir
+                
+                // HTML'i güncelle
+                const barContainer = labelContainer.childNodes[i];
+                barContainer.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <span>${classPrediction}</span>
+                        <span>%${probability}</span>
+                    </div>
+                    <div class="bar-fill" style="width:${probability}%"></div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
