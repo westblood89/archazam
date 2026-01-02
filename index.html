@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCHAZAM - Tarihin Shazam'ı</title>
     <style>
-        /* --- GARANTİ TASARIM (Dış kaynak yok) --- */
+        /* TEMEL AYARLAR */
         body {
-            /* Arkeoloji havası için Georgia/Times (Serif) kullandık */
-            font-family: 'Georgia', 'Times New Roman', serif; 
-            background-color: #001f3f; /* Düz Lacivert (Hatasız) */
-            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            background-color: #001f3f; /* Lacivert */
+            color: white;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -20,54 +19,212 @@
             padding: 20px;
         }
 
+        /* BAŞLIK */
         h1 { 
-            color: #FFDC00; 
+            color: #FFDC00; /* Sarı */
             margin: 20px 0 5px 0; 
             text-transform: uppercase; 
-            letter-spacing: 3px; 
-            font-size: 2.2rem;
-            border-bottom: 2px solid #FFDC00;
-            padding-bottom: 10px;
-            display: inline-block;
+            letter-spacing: 2px; 
+            font-size: 2rem; 
         }
         
-        .slogan { 
-            font-style: italic; 
-            color: #aaa; 
-            margin-bottom: 25px; 
-            font-size: 1rem; 
-            letter-spacing: 1px;
-        }
+        .slogan { font-style: italic; color: #ccc; margin-bottom: 20px; font-size: 0.9rem; }
 
+        /* DURUM MESAJI */
         #status-msg {
-            background-color: #0074D9; 
-            color: white; 
-            padding: 12px;
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            font-weight: bold;
-            font-family: 'Arial', sans-serif; /* Okunabilirlik için sans-serif */
-            display: block; 
-            width: 90%; 
-            max-width: 350px;
+            background-color: #0074D9; color: white; padding: 10px;
+            border-radius: 5px; margin-bottom: 15px; font-weight: bold;
+            display: block; width: 90%; max-width: 350px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        /* --- VİTRİN --- */
+        /* RESİM ALANI */
         #image-preview-container {
             width: 300px; height: 300px;
-            border: 5px solid #FFDC00; /* Altın Çerçeve */
-            border-radius: 10px;
+            border: 4px dashed #FFDC00; border-radius: 15px;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden; 
-            background-color: #000;
+            overflow: hidden; background-color: rgba(0,0,0,0.3);
             margin-bottom: 20px;
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        #image-preview { max-width: 100%; max-height: 100%; display: none; }
+        #placeholder-text { color: #aaa; }
+
+        /* BUTONLAR */
+        .btn-group { display: flex; gap: 12px; flex-direction: column; width: 100%; max-width: 300px; }
+
+        .btn-base {
+            padding: 12px; font-size: 1rem; font-weight: bold;
+            border-radius: 50px; cursor: pointer; border: none;
+            text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s; width: 100%; display: block; box-sizing: border-box;
+        }
+        .btn-base:active { transform: scale(0.95); }
+
+        .btn-camera { background-color: #FFDC00; color: #001f3f; }
+        .btn-gallery { background-color: #fff; color: #001f3f; }
+        
+        .analyze-btn { 
+            background-color: #FF851B; /* Turuncu */
+            color: white; margin-top: 5px;
+            opacity: 0.5; pointer-events: none; padding: 15px; font-size: 1.2rem;
+        }
+        .analyze-btn.active { opacity: 1; pointer-events: all; }
+
+        input[type="file"] { display: none; }
+
+        /* SONUÇ GRAFİKLERİ */
+        #label-container { width: 100%; max-width: 350px; margin-top: 20px; }
+        .result-bar { background-color: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 10px; padding: 10px; }
+        .bar-text { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .bar-bg { width: 100%; height: 12px; background-color: #333; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; background-color: #FFDC00; width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        /* YÜKLENİYOR SİMGESİ */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #FFDC00; border-radius: 50%; width: 15px; height: 15px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <h1>Archazam</h1>
+    <div class="slogan">Tarihin Shazam'ı</div>
+
+    <div id="status-msg"><div class="loader"></div> Sistem Başlatılıyor...</div>
+
+    <div id="image-preview-container">
+        <span id="placeholder-text">Görüntü Bekleniyor</span>
+        <img id="image-preview" src="" alt="Önizleme" />
+    </div>
+
+    <div class="btn-group">
+        <label for="camera-input" class="btn-base btn-camera">
+            📷 FOTOĞRAF ÇEK
+        </label>
+        <input type="file" id="camera-input" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+
+        <label for="gallery-input" class="btn-base btn-gallery">
+            📂 GALERİDEN YÜKLE
+        </label>
+        <input type="file" id="gallery-input" accept="image/*" onchange="handleImageUpload(event)">
+
+        <button id="analyze-button" class="btn-base analyze-btn" onclick="manualPredict()">
+            🔍 ANALİZ ET
+        </button>
+    </div>
+
+    <div id="label-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <script type="text/javascript">
+        // SENİN MODEL LİNKİN
+        const URL = "https://teachablemachine.withgoogle.com/models/stNO7PxAJ/"; 
+
+        let model, labelContainer, maxPredictions;
+        const statusMsg = document.getElementById("status-msg");
+        const analyzeBtn = document.getElementById("analyze-button");
+
+        // Sayfa açılınca modeli yükle
+        init();
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+            try {
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                
+                statusMsg.innerHTML = "✅ Model Hazır! Bir seçim yap.";
+                statusMsg.style.backgroundColor = "#2ECC40"; // Yeşil
+                
+                labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = "";
+                const classLabels = model.getClassLabels();
+                
+                // Boş çubukları oluştur
+                for (let i = 0; i < maxPredictions; i++) { 
+                    labelContainer.innerHTML += `
+                        <div class="result-bar">
+                            <div class="bar-text">
+                                <span>${classLabels[i].toUpperCase()}</span>
+                                <span id="val-${i}">%0</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div id="bar-${i}" class="bar-fill"></div>
+                            </div>
+                        </div>`;
+                }
+            } catch (error) {
+                statusMsg.innerText = "❌ HATA: Model Yüklenemedi.";
+                statusMsg.style.backgroundColor = "#FF4136";
+            }
         }
 
-        #image-preview { max-width: 100%; max-height: 100%; display: none; }
-        #placeholder-text { color: #666; font-size: 1.1rem; }
+        // Resim Yükleme ve Önizleme
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.getElementById("image-preview");
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = "block";
+                    document.getElementById("placeholder-text").style.display = "none";
+                    
+                    statusMsg.innerText = "Hazır! Analiz Et butonuna bas.";
+                    statusMsg.style.backgroundColor = "#0074D9"; // Mavi
+                    analyzeBtn.classList.add("active");
+                    resetBars();
+                }
+                reader.readAsDataURL(file);
+            }
+            event.target.value = ''; // Inputu temizle
+        }
 
-        /* --- BUTONLAR --- */
-        .btn-group { display: flex; gap: 12px; flex-direction: column; width: 100%; max-width: 3
+        // Analiz İşlemi
+        async function manualPredict() {
+            if (!model) return;
+            
+            analyzeBtn.classList.remove("active");
+            statusMsg.innerHTML = '<div class="loader"></div> Analiz Ediliyor...';
+            statusMsg.style.backgroundColor = "#FF851B"; // Turuncu
+            
+            const imgElement = document.getElementById("image-preview");
+            
+            // Kullanıcıya işlem yapıldığını hissettirmek için kısa bekleme
+            setTimeout(async () => {
+                const prediction = await model.predict(imgElement);
+                
+                for (let i = 0; i < maxPredictions; i++) {
+                    const probability = (prediction[i].probability * 100).toFixed(1);
+                    
+                    document.getElementById(`val-${i}`).innerText = "%" + probability;
+                    const fill = document.getElementById(`bar-${i}`);
+                    fill.style.width = probability + "%";
+                    
+                    if(probability > 80) {
+                        fill.style.backgroundColor = "#2ECC40"; // Yeşil
+                    } else if (probability > 50) {
+                        fill.style.backgroundColor = "#FFDC00"; // Sarı
+                    } else {
+                        fill.style.backgroundColor = "#FF4136"; // Kırmızı
+                    }
+                }
+                
+                statusMsg.innerText = "✅ Sonuç Bulundu!";
+                statusMsg.style.backgroundColor = "#2ECC40";
+                analyzeBtn.classList.add("active");
+                
+            }, 500);
+        }
+
+        function resetBars() {
+             for (let i = 0; i < maxPredictions; i++) {
+                document.getElementById(`val-${i}`).innerText = "%0";
+                document.getElementById(`bar-${i}`).style.width = "0%";
+             }
+        }
+    </script>
+</body>
+</html>
