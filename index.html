@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCHAZAM - Tarihin Shazam'ı</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
-        /* --- GENEL TASARIM --- */
+        /* --- GARANTİ TASARIM (Dış kaynak yok) --- */
         body {
-            font-family: 'Lato', sans-serif; /* Okunabilir metin fontu */
-            /* Arkeolojik atmosfer için karanlık ve spot ışıklı arka plan */
-            background: radial-gradient(circle at center, #003366 0%, #000b16 100%);
+            /* Arkeoloji havası için Georgia/Times (Serif) kullandık */
+            font-family: 'Georgia', 'Times New Roman', serif; 
+            background-color: #001f3f; /* Düz Lacivert (Hatasız) */
             color: #e0e0e0;
             text-align: center;
             display: flex;
@@ -25,49 +20,54 @@
             padding: 20px;
         }
 
-        /* --- BAŞLIK VE SLOGAN --- */
         h1 { 
-            font-family: 'Cinzel', serif; /* Antik Roma havası */
             color: #FFDC00; 
-            margin: 25px 0 5px 0; 
+            margin: 20px 0 5px 0; 
             text-transform: uppercase; 
-            letter-spacing: 4px; 
-            font-size: 2.5rem; 
-            text-shadow: 0 2px 10px rgba(255, 220, 0, 0.3);
+            letter-spacing: 3px; 
+            font-size: 2.2rem;
+            border-bottom: 2px solid #FFDC00;
+            padding-bottom: 10px;
+            display: inline-block;
         }
         
         .slogan { 
-            font-family: 'Cinzel', serif;
-            font-size: 1rem; 
+            font-style: italic; 
             color: #aaa; 
             margin-bottom: 25px; 
-            letter-spacing: 2px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-            width: 50%;
+            font-size: 1rem; 
+            letter-spacing: 1px;
         }
 
-        /* --- DURUM MESAJI --- */
         #status-msg {
-            background: rgba(0, 116, 217, 0.2); /* Saydam mavi */
-            border: 1px solid #0074D9;
-            backdrop-filter: blur(5px);
-            color: #fff; padding: 12px;
-            border-radius: 8px; margin-bottom: 20px; font-weight: bold;
-            display: block; width: 90%; max-width: 350px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
+            background-color: #0074D9; 
+            color: white; 
+            padding: 12px;
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            font-weight: bold;
+            font-family: 'Arial', sans-serif; /* Okunabilirlik için sans-serif */
+            display: block; 
+            width: 90%; 
+            max-width: 350px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        /* --- VİTRİN / KAMERA ALANI --- */
+        /* --- VİTRİN --- */
         #image-preview-container {
-            width: 320px; height: 320px;
-            /* Altın Çerçeve Efekti */
-            border: 2px solid #FFDC00; 
-            outline: 6px solid rgba(255, 220, 0, 0.1); /* Dış silik çerçeve */
-            border-radius: 4px; /* Keskin köşeler daha antik durur */
+            width: 300px; height: 300px;
+            border: 5px solid #FFDC00; /* Altın Çerçeve */
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; 
             background-color: #000;
-            margin-bottom: 25px;
-            box-shadow:
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        #image-preview { max-width: 100%; max-height: 100%; display: none; }
+        #placeholder-text { color: #666; font-size: 1.1rem; }
+
+        /* --- BUTONLAR --- */
+        .btn-group { display: flex; gap: 12px; flex-direction: column; width: 100%; max-width: 3
