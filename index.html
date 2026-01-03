@@ -3,21 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARCHAZAM 2.0 - Tarihi Eser Tanımlama</title>
+    <title>ARCHAZAM 2.0</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400;500&display=swap');
-
-        :root {
-            --primary-color: #d4af37; /* Altın rengi - Tarihi his için */
-            --bg-color: #1a1a1a;      /* Koyu gri arka plan */
-            --card-bg: #2d2d2d;       /* Kart rengi */
-            --text-color: #e0e0e0;
-        }
-
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,116 +19,128 @@
         }
 
         .container {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            padding: 40px;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
             max-width: 500px;
             width: 100%;
-            border: 1px solid #444;
         }
 
         h1 {
-            font-family: 'Cinzel', serif; /* Klasik, profesyonel başlık fontu */
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-size: 2.2rem;
+        }
+        
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
         }
 
-        .subtitle {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        button, .file-upload-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.3s;
+            display: inline-block;
+            text-decoration: none;
         }
 
+        button:hover, .file-upload-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Kamera ve Resim Alanı */
         #webcam-container {
-            margin: 20px auto;
-            border-radius: 10px;
+            margin-top: 20px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            min-height: 200px; /* Alanın boşken de yer kaplaması için */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #eee;
+            min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #222;
-        }
-        
-        #uploaded-image {
-            max-width: 100%;
-            border-radius: 10px;
-            display: none; /* Başlangıçta gizli */
         }
 
-        .label-container {
+        #uploaded-image {
+            max-width: 100%;
+            display: none;
+            border-radius: 8px;
+        }
+
+        /* Sonuç Alanı */
+        #label-container {
             margin-top: 20px;
             text-align: left;
         }
 
-        .result-bar-container {
-            margin-bottom: 15px;
+        .prediction-item {
+            margin-bottom: 10px;
+            font-size: 15px;
         }
 
-        .result-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
-        .progress-bg {
-            background-color: #444;
-            border-radius: 5px;
-            height: 8px;
+        .progress-bar-bg {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
             width: 100%;
+            margin-top: 5px;
             overflow: hidden;
         }
 
-        .progress-fill {
-            background-color: var(--primary-color);
+        .progress-bar-fill {
             height: 100%;
+            border-radius: 10px;
+            background-color: #3498db;
             width: 0%;
             transition: width 0.3s ease;
         }
 
-        /* Kontroller en altta */
-        .controls {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        button, .file-upload-label {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            padding: 12px 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        button:hover, .file-upload-label:hover {
-            background-color: var(--primary-color);
-            color: var(--bg-color);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-        }
-
         input[type="file"] {
             display: none;
+        }
+
+        /* Geri Bildirim Kısmı (En altta) */
+        .feedback-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: none; /* Sonuç çıkana kadar gizli */
+        }
+        
+        .feedback-question {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .btn-yes {
+            background-color: #27ae60;
+        }
+        .btn-yes:hover {
+            background-color: #219150;
+        }
+
+        .btn-no {
+            background-color: #e74c3c;
+        }
+        .btn-no:hover {
+            background-color: #c0392b;
+        }
+
+        #feedback-message {
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+            min-height: 20px;
         }
 
     </style>
@@ -145,21 +148,27 @@
 <body>
 
     <div class="container">
-        <h1>ARCHAZAM 1.1</h1>
-        <div class="subtitle">Yapay Zeka Destekli Tarih Tanımlayıcı</div>
+        <h1>ARCHAZAM 2.0</h1>
+        <p class="subtitle">Tarihi Eser Tanımlama Sistemi</p>
+
+        <div>
+            <button type="button" onclick="init()">Kamerayı Başlat</button>
+            <label for="imageUpload" class="file-upload-btn">Fotoğraf Yükle</label>
+            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+        </div>
 
         <div id="webcam-container">
-            <span style="color:#666;">Görüntü bekleniyor...</span>
+            <span style="color:#999;">Görüntü bekleniyor...</span>
             <img id="uploaded-image" src="#" alt="Yüklenen Eser" />
         </div>
 
-        <div id="label-container" class="label-container"></div>
+        <div id="label-container"></div>
 
-        <div class="controls">
-            <button type="button" onclick="init()">Kamerayı Başlat</button>
-            
-            <label for="imageUpload" class="file-upload-label">Fotoğraf Yükle</label>
-            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+        <div id="feedback-section" class="feedback-section">
+            <div class="feedback-question">Analiz sonuçlarının doğruluğunu teyit eder misiniz?</div>
+            <button class="btn-yes" onclick="giveFeedback(true)">Evet, Doğru</button>
+            <button class="btn-no" onclick="giveFeedback(false)">Hayır, Hatalı</button>
+            <div id="feedback-message"></div>
         </div>
     </div>
 
@@ -167,67 +176,66 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // GÜNCELLENEN MODEL LİNKİ
+        // YENİ MODEL LİNKİ
         const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
 
         let model, webcam, labelContainer, maxPredictions;
 
-        // Modeli yükle
         async function loadModel() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
-            
-            // Etiket alanını temizle ve hazırla
+
             labelContainer = document.getElementById("label-container");
-            labelContainer.innerHTML = "";
+            labelContainer.innerHTML = ""; // Temizle
+            
+            // Sonuç çubuklarını oluştur
             for (let i = 0; i < maxPredictions; i++) {
-                // Her sınıf için bir progress bar yapısı oluştur
                 let div = document.createElement("div");
-                div.className = "result-bar-container";
+                div.className = "prediction-item";
                 div.innerHTML = `
-                    <div class="result-label">
+                    <div style="display:flex; justify-content:space-between;">
                         <span id="label-name-${i}">Sınıf ${i}</span>
-                        <span id="label-prob-${i}">0%</span>
+                        <span id="label-prob-${i}">%0</span>
                     </div>
-                    <div class="progress-bg">
-                        <div id="progress-${i}" class="progress-fill"></div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-${i}" class="progress-bar-fill"></div>
                     </div>
                 `;
                 labelContainer.appendChild(div);
             }
         }
 
-        // Webcami Başlat
         async function init() {
             if(!model) await loadModel();
 
-            // Yüklenen resmi gizle, webcam'i göster
+            // Resmi gizle, webcam'i hazırla
             document.getElementById("uploaded-image").style.display = "none";
-            document.getElementById("webcam-container").innerHTML = ""; // Temizle
+            document.getElementById("webcam-container").innerHTML = ""; 
 
             const flip = true; 
-            webcam = new tmImage.Webcam(300, 300, flip);
-            await webcam.setup();
+            webcam = new tmImage.Webcam(300, 300, flip); 
+            await webcam.setup(); 
             await webcam.play();
             window.requestAnimationFrame(loop);
 
             document.getElementById("webcam-container").appendChild(webcam.canvas);
+            
+            // Geri bildirim alanını göster
+            document.getElementById("feedback-section").style.display = "block";
+            document.getElementById("feedback-message").innerText = "";
         }
 
-        // Webcam Döngüsü
         async function loop() {
             webcam.update();
             await predict();
             window.requestAnimationFrame(loop);
         }
 
-        // Resim Yükleme Fonksiyonu
         async function handleImageUpload(event) {
             if(!model) await loadModel();
 
-            // Varsa çalışan webcam'i durdur
             if(webcam) {
                 await webcam.stop();
                 webcam = null;
@@ -240,33 +248,34 @@
                     const imgElement = document.getElementById("uploaded-image");
                     imgElement.src = e.target.result;
                     imgElement.style.display = "block";
-                    
+
                     // Webcam canvas varsa kaldır
                     const canvas = document.querySelector("#webcam-container canvas");
                     if(canvas) canvas.remove();
-                    
-                    // Resim yüklendiğinde tahmin yap
+
+                    // Resim yüklenince tahmin yap
                     imgElement.onload = async function() {
                         await predictImage(imgElement);
                     }
+                    
+                    // Geri bildirim alanını göster
+                    document.getElementById("feedback-section").style.display = "block";
+                    document.getElementById("feedback-message").innerText = "";
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // Webcam Tahmini
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
             updateBars(prediction);
         }
 
-        // Yüklenen Resim Tahmini
         async function predictImage(imageElement) {
             const prediction = await model.predict(imageElement);
             updateBars(prediction);
         }
 
-        // Sonuç Çubuklarını Güncelleme (Ortak Fonksiyon)
         function updateBars(prediction) {
             for (let i = 0; i < maxPredictions; i++) {
                 const nameSpan = document.getElementById(`label-name-${i}`);
@@ -279,13 +288,19 @@
                 nameSpan.innerHTML = prediction[i].className;
                 probSpan.innerHTML = percent;
                 progressBar.style.width = percent;
-                
-                // En yüksek olasılığı vurgula (opsiyonel renk değişimi)
-                if(probability > 0.80) {
-                   progressBar.style.backgroundColor = "#4caf50"; // Yüksek güven için yeşil
-                } else {
-                   progressBar.style.backgroundColor = "#d4af37"; // Standart altın rengi
-                }
+            }
+        }
+
+        // Profesyonel Geri Bildirim Fonksiyonu
+        function giveFeedback(isCorrect) {
+            const messageArea = document.getElementById("feedback-message");
+            
+            if (isCorrect) {
+                messageArea.style.color = "#27ae60";
+                messageArea.innerText = "Geri bildiriminiz için teşekkürler! Sistemimizin doğruluğunu artırmamıza yardımcı oluyorsunuz.";
+            } else {
+                messageArea.style.color = "#e74c3c";
+                messageArea.innerText = "Geri bildiriminiz için teşekkürler. Bu hatayı inceleyip modelimizi geliştireceğiz.";
             }
         }
     </script>
