@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCHAZAM - Tarihin Shazam'ı</title>
     <style>
-        /* TEMEL AYARLAR */
+        /* --- GENEL TASARIM --- */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #001f3f; /* Lacivert */
@@ -19,9 +19,8 @@
             padding: 20px;
         }
 
-        /* BAŞLIK */
         h1 { 
-            color: #FFDC00; /* Sarı */
+            color: #FFDC00; 
             margin: 20px 0 5px 0; 
             text-transform: uppercase; 
             letter-spacing: 2px; 
@@ -30,15 +29,16 @@
         
         .slogan { font-style: italic; color: #ccc; margin-bottom: 20px; font-size: 0.9rem; }
 
-        /* DURUM MESAJI */
+        /* --- DURUM MESAJI --- */
         #status-msg {
             background-color: #0074D9; color: white; padding: 10px;
             border-radius: 5px; margin-bottom: 15px; font-weight: bold;
             display: block; width: 90%; max-width: 350px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
         }
 
-        /* RESİM ALANI */
+        /* --- VİTRİN --- */
         #image-preview-container {
             width: 300px; height: 300px;
             border: 4px dashed #FFDC00; border-radius: 15px;
@@ -49,7 +49,7 @@
         #image-preview { max-width: 100%; max-height: 100%; display: none; }
         #placeholder-text { color: #aaa; }
 
-        /* BUTONLAR */
+        /* --- BUTONLAR --- */
         .btn-group { display: flex; gap: 12px; flex-direction: column; width: 100%; max-width: 300px; }
 
         .btn-base {
@@ -64,7 +64,7 @@
         .btn-gallery { background-color: #fff; color: #001f3f; }
         
         .analyze-btn { 
-            background-color: #FF851B; /* Turuncu */
+            background-color: #FF851B; 
             color: white; margin-top: 5px;
             opacity: 0.5; pointer-events: none; padding: 15px; font-size: 1.2rem;
         }
@@ -72,14 +72,40 @@
 
         input[type="file"] { display: none; }
 
-        /* SONUÇ GRAFİKLERİ */
+        /* --- GERİ BİLDİRİM ALANI (YENİ) --- */
+        #feedback-section {
+            display: none; /* Başlangıçta gizli */
+            margin-top: 20px;
+            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 320px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .feedback-title { font-size: 0.9rem; color: #FFDC00; margin-bottom: 10px; }
+        
+        .feedback-buttons { display: flex; gap: 10px; justify-content: center; }
+        
+        .btn-feedback {
+            flex: 1; padding: 10px; border-radius: 8px; border: none; 
+            font-weight: bold; cursor: pointer; color: white;
+            transition: transform 0.2s;
+        }
+        .btn-yes { background-color: #2ECC40; } /* Yeşil */
+        .btn-no { background-color: #FF4136; }  /* Kırmızı */
+        .btn-feedback:active { transform: scale(0.9); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SONUÇLAR --- */
         #label-container { width: 100%; max-width: 350px; margin-top: 20px; }
         .result-bar { background-color: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 10px; padding: 10px; }
         .bar-text { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
         .bar-bg { width: 100%; height: 12px; background-color: #333; border-radius: 10px; overflow: hidden; }
         .bar-fill { height: 100%; background-color: #FFDC00; width: 0%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        /* YÜKLENİYOR SİMGESİ */
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #FFDC00; border-radius: 50%; width: 15px; height: 15px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -112,20 +138,28 @@
         </button>
     </div>
 
+    <div id="feedback-section">
+        <div class="feedback-title">SONUÇ DOĞRU MU?</div>
+        <div class="feedback-buttons">
+            <button class="btn-feedback btn-yes" onclick="giveFeedback(true)">👍 EVET</button>
+            <button class="btn-feedback btn-no" onclick="giveFeedback(false)">👎 HAYIR</button>
+        </div>
+    </div>
+
     <div id="label-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // SENİN MODEL LİNKİN
+        // SENİN MODEL LİNKİN (Burayı güncellemen gerekebilir)
         const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/"; 
 
         let model, labelContainer, maxPredictions;
         const statusMsg = document.getElementById("status-msg");
         const analyzeBtn = document.getElementById("analyze-button");
+        const feedbackSection = document.getElementById("feedback-section");
 
-        // Sayfa açılınca modeli yükle
         init();
 
         async function init() {
@@ -134,15 +168,12 @@
             try {
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
-                
                 statusMsg.innerHTML = "✅ Model Hazır! Bir seçim yap.";
-                statusMsg.style.backgroundColor = "#2ECC40"; // Yeşil
+                statusMsg.style.backgroundColor = "#2ECC40";
                 
                 labelContainer = document.getElementById("label-container");
                 labelContainer.innerHTML = "";
                 const classLabels = model.getClassLabels();
-                
-                // Boş çubukları oluştur
                 for (let i = 0; i < maxPredictions; i++) { 
                     labelContainer.innerHTML += `
                         <div class="result-bar">
@@ -161,7 +192,6 @@
             }
         }
 
-        // Resim Yükleme ve Önizleme
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -173,48 +203,48 @@
                     document.getElementById("placeholder-text").style.display = "none";
                     
                     statusMsg.innerText = "Hazır! Analiz Et butonuna bas.";
-                    statusMsg.style.backgroundColor = "#0074D9"; // Mavi
+                    statusMsg.style.backgroundColor = "#0074D9";
+                    
                     analyzeBtn.classList.add("active");
+                    feedbackSection.style.display = "none"; // Yeni resimde feedback'i gizle
                     resetBars();
                 }
                 reader.readAsDataURL(file);
             }
-            event.target.value = ''; // Inputu temizle
+            event.target.value = ''; 
         }
 
-        // Analiz İşlemi
         async function manualPredict() {
             if (!model) return;
             
             analyzeBtn.classList.remove("active");
+            feedbackSection.style.display = "none"; // Analiz başlarken gizle
+            
             statusMsg.innerHTML = '<div class="loader"></div> Analiz Ediliyor...';
-            statusMsg.style.backgroundColor = "#FF851B"; // Turuncu
+            statusMsg.style.backgroundColor = "#FF851B"; 
             
             const imgElement = document.getElementById("image-preview");
             
-            // Kullanıcıya işlem yapıldığını hissettirmek için kısa bekleme
             setTimeout(async () => {
                 const prediction = await model.predict(imgElement);
                 
                 for (let i = 0; i < maxPredictions; i++) {
                     const probability = (prediction[i].probability * 100).toFixed(1);
-                    
                     document.getElementById(`val-${i}`).innerText = "%" + probability;
                     const fill = document.getElementById(`bar-${i}`);
                     fill.style.width = probability + "%";
                     
-                    if(probability > 80) {
-                        fill.style.backgroundColor = "#2ECC40"; // Yeşil
-                    } else if (probability > 50) {
-                        fill.style.backgroundColor = "#FFDC00"; // Sarı
-                    } else {
-                        fill.style.backgroundColor = "#FF4136"; // Kırmızı
-                    }
+                    if(probability > 80) fill.style.backgroundColor = "#2ECC40"; 
+                    else if (probability > 50) fill.style.backgroundColor = "#FFDC00"; 
+                    else fill.style.backgroundColor = "#FF4136"; 
                 }
                 
                 statusMsg.innerText = "✅ Sonuç Bulundu!";
                 statusMsg.style.backgroundColor = "#2ECC40";
                 analyzeBtn.classList.add("active");
+                
+                // ANALİZ BİTİNCE BUTONLARI GÖSTER
+                feedbackSection.style.display = "block";
                 
             }, 500);
         }
@@ -225,7 +255,23 @@
                 document.getElementById(`bar-${i}`).style.width = "0%";
              }
         }
+
+        // --- GERİ BİLDİRİM SİMÜLASYONU ---
+        function giveFeedback(isCorrect) {
+            if (isCorrect) {
+                // EVET'e basılırsa
+                statusMsg.innerText = "🎉 Harika! Sistem doğrulandı.";
+                statusMsg.style.backgroundColor = "#2ECC40"; // Yeşil
+                alert("Teşekkürler! Geri bildiriminiz veri tabanına işlendi ve modelin güvenilirliği artırıldı. ✅");
+            } else {
+                // HAYIR'a basılırsa
+                statusMsg.innerText = "⚠️ Hata Raporlandı.";
+                statusMsg.style.backgroundColor = "#FF4136"; // Kırmızı
+                alert("Özür dileriz! 😔 Bu görüntüyü 'İncelenecekler' listesine ekledik. Mühendis ekibimiz bir sonraki güncellemede bunu düzeltecek.");
+            }
+            // Butonları tekrar gizle
+            feedbackSection.style.display = "none";
+        }
     </script>
 </body>
 </html>
-
