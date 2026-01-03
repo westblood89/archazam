@@ -32,6 +32,7 @@
             margin-bottom: 0.5rem;
             color: #2c3e50;
             font-size: 2.2rem;
+            margin-top: 0;
         }
         
         p.subtitle {
@@ -39,32 +40,38 @@
             margin-bottom: 1.5rem;
         }
 
-        button, .file-upload-btn {
+        /* Buton Grubu */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             font-size: 16px;
-            margin: 5px;
             cursor: pointer;
             border-radius: 6px;
             transition: background 0.3s;
-            display: inline-block;
-            text-decoration: none;
+            font-weight: 600;
         }
 
-        button:hover, .file-upload-btn:hover {
+        .action-btn:hover {
             background-color: #2980b9;
         }
 
         /* Kamera ve Resim Alanı */
-        #webcam-container {
-            margin-top: 20px;
+        #visual-area {
+            margin-top: 10px;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             background: #eee;
-            min-height: 200px; /* Alanın yüksekliği */
+            min-height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -73,12 +80,20 @@
 
         #placeholder-text {
             color: #999;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            position: absolute;
+            z-index: 10;
         }
 
         #uploaded-image {
             max-width: 100%;
-            display: none; /* Başlangıçta gizli */
+            max-height: 300px;
+            display: none;
+            z-index: 20;
+        }
+
+        canvas {
+            z-index: 20;
             border-radius: 8px;
         }
 
@@ -110,16 +125,12 @@
             transition: width 0.3s ease;
         }
 
-        input[type="file"] {
-            display: none;
-        }
-
-        /* Geri Bildirim Kısmı (En altta) */
+        /* Geri Bildirim Kısmı */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #eee;
-            display: none; /* Sonuç çıkana kadar gizli */
+            display: none;
         }
         
         .feedback-question {
@@ -128,20 +139,30 @@
             margin-bottom: 10px;
         }
 
-        .btn-yes {
-            background-color: #27ae60;
-            width: 100px;
-        }
-        .btn-yes:hover {
-            background-color: #219150;
+        .feedback-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
         }
 
-        .btn-no {
-            background-color: #e74c3c;
+        .btn-yes {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
             width: 100px;
         }
-        .btn-no:hover {
-            background-color: #c0392b;
+        
+        .btn-no {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px;
         }
 
         #feedback-message {
@@ -151,6 +172,14 @@
             min-height: 20px;
         }
 
+        /* Yükleniyor Uyarısı */
+        #loading-msg {
+            color: #d35400;
+            font-size: 0.9rem;
+            display: none;
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -158,7 +187,183 @@
     <div class="container">
         <h1>ARCHAZAM 2.0</h1>
         <p class="subtitle">Tarihi Eser Tanımlama Sistemi</p>
+        
+        <div id="loading-msg">Sistem yükleniyor, lütfen bekleyin...</div>
 
-        <div>
-            <button type="button" onclick="init()">Kamerayı Başlat</button>
-            <label for="imageUpload
+        <div class="button-group">
+            <button class="action-btn" onclick="init()">Kamerayı Başlat</button>
+            <button class="action-btn" onclick="document.getElementById('imageUpload').click()">Fotoğraf Yükle</button>
+            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
+        </div>
+
+        <div id="visual-area">
+            <div id="placeholder-text">Görüntü bekleniyor...</div>
+            <img id="uploaded-image" src="#" alt="Yüklenen Eser" />
+        </div>
+
+        <div id="label-container"></div>
+
+        <div id="feedback-section" class="feedback-section">
+            <div class="feedback-question">Analiz sonuçlarının doğruluğunu teyit eder misiniz?</div>
+            <div class="feedback-buttons">
+                <button class="btn-yes" onclick="giveFeedback(true)">Doğru</button>
+                <button class="btn-no" onclick="giveFeedback(false)">Hatalı</button>
+            </div>
+            <div id="feedback-message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <script type="text/javascript">
+        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
+
+        let model, webcam, labelContainer, maxPredictions;
+        let isModelLoading = false;
+
+        async function loadModel() {
+            if (model || isModelLoading) return;
+            
+            isModelLoading = true;
+            document.getElementById("loading-msg").style.display = "block";
+            
+            try {
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                
+                // Etiketleri hazırla
+                labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = "";
+                for (let i = 0; i < maxPredictions; i++) {
+                    let div = document.createElement("div");
+                    div.className = "prediction-item";
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span id="label-name-${i}">Sınıf ${i}</span>
+                            <span id="label-prob-${i}">%0</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="progress-${i}" class="progress-bar-fill"></div>
+                        </div>
+                    `;
+                    labelContainer.appendChild(div);
+                }
+            } catch (error) {
+                alert("Model yüklenirken hata oluştu. İnternet bağlantınızı kontrol edin.");
+            }
+            
+            isModelLoading = false;
+            document.getElementById("loading-msg").style.display = "none";
+        }
+
+        async function init() {
+            await loadModel();
+            
+            // UI Temizliği
+            document.getElementById("placeholder-text").style.display = "none";
+            document.getElementById("uploaded-image").style.display = "none";
+            
+            // Eski webcam canvas varsa sil
+            const container = document.getElementById("visual-area");
+            const oldCanvas = container.querySelector("canvas");
+            if(oldCanvas) oldCanvas.remove();
+
+            // Kamerayı başlat
+            const flip = true; 
+            webcam = new tmImage.Webcam(300, 300, flip); 
+            await webcam.setup(); 
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            container.appendChild(webcam.canvas);
+            
+            resetFeedback();
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function handleImageUpload(event) {
+            await loadModel();
+
+            // Webcam çalışıyorsa durdur
+            if(webcam) {
+                await webcam.stop();
+                webcam = null;
+                const container = document.getElementById("visual-area");
+                const canvas = container.querySelector("canvas");
+                if(canvas) canvas.remove();
+            }
+
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Placeholder'ı gizle, resmi göster
+                    document.getElementById("placeholder-text").style.display = "none";
+                    
+                    const imgElement = document.getElementById("uploaded-image");
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = "block";
+
+                    imgElement.onload = async function() {
+                        await predictImage(imgElement);
+                    }
+                    
+                    resetFeedback();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function predict() {
+            if(webcam && webcam.canvas) {
+                const prediction = await model.predict(webcam.canvas);
+                updateBars(prediction);
+            }
+        }
+
+        async function predictImage(imageElement) {
+            const prediction = await model.predict(imageElement);
+            updateBars(prediction);
+        }
+
+        function updateBars(prediction) {
+            for (let i = 0; i < maxPredictions; i++) {
+                const nameSpan = document.getElementById(`label-name-${i}`);
+                const probSpan = document.getElementById(`label-prob-${i}`);
+                const progressBar = document.getElementById(`progress-${i}`);
+
+                const probability = prediction[i].probability.toFixed(2);
+                const percent = Math.round(probability * 100) + "%";
+
+                nameSpan.innerHTML = prediction[i].className;
+                probSpan.innerHTML = percent;
+                progressBar.style.width = percent;
+            }
+        }
+
+        function resetFeedback() {
+            document.getElementById("feedback-section").style.display = "block";
+            document.getElementById("feedback-message").innerText = "";
+        }
+
+        function giveFeedback(isCorrect) {
+            const messageArea = document.getElementById("feedback-message");
+            if (isCorrect) {
+                messageArea.style.color = "#27ae60";
+                messageArea.innerText = "Teşekkürler! Sistemimizin doğruluğunu artırmamıza yardımcı oluyorsunuz.";
+            } else {
+                messageArea.style.color = "#e74c3c";
+                messageArea.innerText = "Teşekkürler. Bu hatayı inceleyip modelimizi geliştireceğiz.";
+            }
+        }
+    </script>
+</body>
+</html>
