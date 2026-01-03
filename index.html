@@ -145,24 +145,27 @@
             gap: 15px;
         }
 
-        .btn-yes {
-            background-color: #27ae60;
+        .btn-yes, .btn-no {
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             width: 100px;
+            transition: all 0.3s;
         }
-        
-        .btn-no {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100px;
+
+        .btn-yes { background-color: #27ae60; }
+        .btn-yes:hover { background-color: #219150; }
+
+        .btn-no { background-color: #e74c3c; }
+        .btn-no:hover { background-color: #c0392b; }
+
+        /* Pasif Buton Stili */
+        button:disabled {
+            background-color: #bdc3c7 !important;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         #feedback-message {
@@ -206,8 +209,8 @@
         <div id="feedback-section" class="feedback-section">
             <div class="feedback-question">Analiz sonuçlarının doğruluğunu teyit eder misiniz?</div>
             <div class="feedback-buttons">
-                <button class="btn-yes" onclick="giveFeedback(true)">Doğru</button>
-                <button class="btn-no" onclick="giveFeedback(false)">Hatalı</button>
+                <button id="btn-yes" class="btn-yes" onclick="giveFeedback(true)">Doğru</button>
+                <button id="btn-no" class="btn-no" onclick="giveFeedback(false)">Hatalı</button>
             </div>
             <div id="feedback-message"></div>
         </div>
@@ -234,7 +237,6 @@
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
                 
-                // Etiketleri hazırla
                 labelContainer = document.getElementById("label-container");
                 labelContainer.innerHTML = "";
                 for (let i = 0; i < maxPredictions; i++) {
@@ -262,16 +264,13 @@
         async function init() {
             await loadModel();
             
-            // UI Temizliği
             document.getElementById("placeholder-text").style.display = "none";
             document.getElementById("uploaded-image").style.display = "none";
             
-            // Eski webcam canvas varsa sil
             const container = document.getElementById("visual-area");
             const oldCanvas = container.querySelector("canvas");
             if(oldCanvas) oldCanvas.remove();
 
-            // Kamerayı başlat
             const flip = true; 
             webcam = new tmImage.Webcam(300, 300, flip); 
             await webcam.setup(); 
@@ -280,7 +279,7 @@
 
             container.appendChild(webcam.canvas);
             
-            resetFeedback();
+            resetFeedback(); // Butonları sıfırla
         }
 
         async function loop() {
@@ -292,7 +291,6 @@
         async function handleImageUpload(event) {
             await loadModel();
 
-            // Webcam çalışıyorsa durdur
             if(webcam) {
                 await webcam.stop();
                 webcam = null;
@@ -305,7 +303,6 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Placeholder'ı gizle, resmi göster
                     document.getElementById("placeholder-text").style.display = "none";
                     
                     const imgElement = document.getElementById("uploaded-image");
@@ -316,7 +313,7 @@
                         await predictImage(imgElement);
                     }
                     
-                    resetFeedback();
+                    resetFeedback(); // Butonları sıfırla
                 }
                 reader.readAsDataURL(file);
             }
@@ -350,12 +347,23 @@
         }
 
         function resetFeedback() {
+            // Geri bildirim alanını göster
             document.getElementById("feedback-section").style.display = "block";
+            // Mesajı temizle
             document.getElementById("feedback-message").innerText = "";
+            
+            // Butonları tekrar aktif et
+            document.getElementById("btn-yes").disabled = false;
+            document.getElementById("btn-no").disabled = false;
         }
 
         function giveFeedback(isCorrect) {
             const messageArea = document.getElementById("feedback-message");
+            
+            // Butonları pasif hale getir
+            document.getElementById("btn-yes").disabled = true;
+            document.getElementById("btn-no").disabled = true;
+
             if (isCorrect) {
                 messageArea.style.color = "#27ae60";
                 messageArea.innerText = "Teşekkürler! Sistemimizin doğruluğunu artırmamıza yardımcı oluyorsunuz.";
