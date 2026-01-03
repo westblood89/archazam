@@ -64,15 +64,21 @@
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             background: #eee;
-            min-height: 200px;
+            min-height: 200px; /* Alanın yüksekliği */
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        #placeholder-text {
+            color: #999;
+            font-size: 0.9rem;
         }
 
         #uploaded-image {
             max-width: 100%;
-            display: none;
+            display: none; /* Başlangıçta gizli */
             border-radius: 8px;
         }
 
@@ -124,6 +130,7 @@
 
         .btn-yes {
             background-color: #27ae60;
+            width: 100px;
         }
         .btn-yes:hover {
             background-color: #219150;
@@ -131,6 +138,7 @@
 
         .btn-no {
             background-color: #e74c3c;
+            width: 100px;
         }
         .btn-no:hover {
             background-color: #c0392b;
@@ -153,156 +161,4 @@
 
         <div>
             <button type="button" onclick="init()">Kamerayı Başlat</button>
-            <label for="imageUpload" class="file-upload-btn">Fotoğraf Yükle</label>
-            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
-        </div>
-
-        <div id="webcam-container">
-            <span style="color:#999;">Görüntü bekleniyor...</span>
-            <img id="uploaded-image" src="#" alt="Yüklenen Eser" />
-        </div>
-
-        <div id="label-container"></div>
-
-        <div id="feedback-section" class="feedback-section">
-            <div class="feedback-question">Analiz sonuçlarının doğruluğunu teyit eder misiniz?</div>
-            <button class="btn-yes" onclick="giveFeedback(true)">Evet, Doğru</button>
-            <button class="btn-no" onclick="giveFeedback(false)">Hayır, Hatalı</button>
-            <div id="feedback-message"></div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
-    <script type="text/javascript">
-        // YENİ MODEL LİNKİ
-        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
-
-        let model, webcam, labelContainer, maxPredictions;
-
-        async function loadModel() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
-
-            labelContainer = document.getElementById("label-container");
-            labelContainer.innerHTML = ""; // Temizle
-            
-            // Sonuç çubuklarını oluştur
-            for (let i = 0; i < maxPredictions; i++) {
-                let div = document.createElement("div");
-                div.className = "prediction-item";
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between;">
-                        <span id="label-name-${i}">Sınıf ${i}</span>
-                        <span id="label-prob-${i}">%0</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div id="progress-${i}" class="progress-bar-fill"></div>
-                    </div>
-                `;
-                labelContainer.appendChild(div);
-            }
-        }
-
-        async function init() {
-            if(!model) await loadModel();
-
-            // Resmi gizle, webcam'i hazırla
-            document.getElementById("uploaded-image").style.display = "none";
-            document.getElementById("webcam-container").innerHTML = ""; 
-
-            const flip = true; 
-            webcam = new tmImage.Webcam(300, 300, flip); 
-            await webcam.setup(); 
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            
-            // Geri bildirim alanını göster
-            document.getElementById("feedback-section").style.display = "block";
-            document.getElementById("feedback-message").innerText = "";
-        }
-
-        async function loop() {
-            webcam.update();
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
-
-        async function handleImageUpload(event) {
-            if(!model) await loadModel();
-
-            if(webcam) {
-                await webcam.stop();
-                webcam = null;
-            }
-
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const imgElement = document.getElementById("uploaded-image");
-                    imgElement.src = e.target.result;
-                    imgElement.style.display = "block";
-
-                    // Webcam canvas varsa kaldır
-                    const canvas = document.querySelector("#webcam-container canvas");
-                    if(canvas) canvas.remove();
-
-                    // Resim yüklenince tahmin yap
-                    imgElement.onload = async function() {
-                        await predictImage(imgElement);
-                    }
-                    
-                    // Geri bildirim alanını göster
-                    document.getElementById("feedback-section").style.display = "block";
-                    document.getElementById("feedback-message").innerText = "";
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            updateBars(prediction);
-        }
-
-        async function predictImage(imageElement) {
-            const prediction = await model.predict(imageElement);
-            updateBars(prediction);
-        }
-
-        function updateBars(prediction) {
-            for (let i = 0; i < maxPredictions; i++) {
-                const nameSpan = document.getElementById(`label-name-${i}`);
-                const probSpan = document.getElementById(`label-prob-${i}`);
-                const progressBar = document.getElementById(`progress-${i}`);
-
-                const probability = prediction[i].probability.toFixed(2);
-                const percent = Math.round(probability * 100) + "%";
-
-                nameSpan.innerHTML = prediction[i].className;
-                probSpan.innerHTML = percent;
-                progressBar.style.width = percent;
-            }
-        }
-
-        // Profesyonel Geri Bildirim Fonksiyonu
-        function giveFeedback(isCorrect) {
-            const messageArea = document.getElementById("feedback-message");
-            
-            if (isCorrect) {
-                messageArea.style.color = "#27ae60";
-                messageArea.innerText = "Geri bildiriminiz için teşekkürler! Sistemimizin doğruluğunu artırmamıza yardımcı oluyorsunuz.";
-            } else {
-                messageArea.style.color = "#e74c3c";
-                messageArea.innerText = "Geri bildiriminiz için teşekkürler. Bu hatayı inceleyip modelimizi geliştireceğiz.";
-            }
-        }
-    </script>
-</body>
-</html>
+            <label for="imageUpload
