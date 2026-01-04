@@ -8,19 +8,18 @@
     
     <style>
         :root {
-            --bg-paper: #fdf5e6;      /* Eski kağıt rengi */
-            --primary-clay: #8d6e63;  /* Pişmiş toprak rengi */
-            --accent-gold: #d4af37;   /* Altın rengi */
-            --text-dark: #3e2723;     /* Koyu kahve yazı */
-            --museum-green: #2e7d32;  /* Doğru buton yeşili */
-            --ruin-red: #c62828;      /* Hata buton kırmızısı */
+            --bg-paper: #fdf5e6;
+            --primary-clay: #8d6e63;
+            --accent-gold: #d4af37;
+            --text-dark: #3e2723;
+            --museum-green: #2e7d32;
+            --ruin-red: #c62828;
         }
 
         body {
             font-family: 'Lato', sans-serif;
             background-color: var(--bg-paper);
             color: var(--text-dark);
-            /* Hafif bir kağıt dokusu efekti */
             background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
             background-size: 20px 20px;
             display: flex;
@@ -33,22 +32,20 @@
         }
 
         .container {
-            background-color: #fff8e1; /* Daha açık bir krem tonu */
+            background-color: #fff8e1;
             padding: 2.5rem;
             border-radius: 4px;
-            /* Çift çerçeve efekti - Müze kartı gibi */
             border: 2px solid var(--primary-clay);
             outline: 6px solid var(--accent-gold); 
             box-shadow: 0 15px 30px rgba(62, 39, 35, 0.3);
             text-align: center;
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
             position: relative;
         }
 
-        /* Köşelere dekoratif vida görünümü */
         .container::before, .container::after {
-            content: '☩'; /* Antik bir sembol */
+            content: '☩';
             position: absolute;
             color: var(--primary-clay);
             font-size: 20px;
@@ -76,7 +73,6 @@
             font-size: 1.1rem;
         }
 
-        /* Buton Grubu */
         .button-group {
             display: flex;
             justify-content: center;
@@ -91,12 +87,12 @@
             padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 2px; /* Keskin köşeler - taş blok gibi */
+            border-radius: 2px;
             transition: all 0.3s;
             font-family: 'Cinzel', serif;
             font-weight: 700;
             text-transform: uppercase;
-            box-shadow: 0 4px 0 #281815; /* 3D Buton efekti */
+            box-shadow: 0 4px 0 #281815;
         }
 
         .action-btn:hover {
@@ -105,12 +101,6 @@
             box-shadow: 0 2px 0 #281815;
         }
         
-        .action-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
-
-        /* Kamera ve Resim Alanı */
         #visual-area {
             margin-top: 10px;
             border-radius: 4px;
@@ -142,11 +132,8 @@
             border: 2px solid #fff;
         }
 
-        canvas {
-            z-index: 20;
-        }
+        canvas { z-index: 20; }
 
-        /* Sonuç Alanı */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -158,12 +145,12 @@
 
         .prediction-item {
             margin-bottom: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
         }
 
         .progress-bar-bg {
-            background-color: #d7ccc8; /* Açık kahve */
+            background-color: #d7ccc8;
             border-radius: 4px;
             height: 12px;
             width: 100%;
@@ -174,12 +161,12 @@
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-gold), #ff8f00); /* Altın rengi dolum */
+            background: linear-gradient(90deg, var(--accent-gold), #ff8f00);
             width: 0%;
             transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        /* Geri Bildirim Kısmı */
+        /* Doğrulama Alanı */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -211,21 +198,12 @@
             font-weight: bold;
             font-family: 'Cinzel', serif;
             transition: all 0.3s;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
 
         .btn-yes { background-color: var(--museum-green); }
-        .btn-yes:hover { background-color: #1b5e20; transform: scale(1.05); }
-
         .btn-no { background-color: var(--ruin-red); }
-        .btn-no:hover { background-color: #b71c1c; transform: scale(1.05); }
 
-        button:disabled {
-            background-color: #9e9e9e !important;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
+        button:disabled { background-color: #9e9e9e !important; cursor: not-allowed; }
 
         #feedback-message {
             margin-top: 15px;
@@ -234,7 +212,6 @@
             min-height: 20px;
         }
 
-        /* Yükleniyor Uyarısı */
         #loading-msg {
             color: var(--primary-clay);
             font-weight: bold;
@@ -243,6 +220,91 @@
             background: rgba(212, 175, 55, 0.2);
             padding: 5px;
             border-radius: 4px;
+        }
+
+        /* --- YENİLENEN İLETİŞİM ALANI --- */
+        
+        /* Animasyon Tanımı */
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); transform: scale(1); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); transform: scale(1.02); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); transform: scale(1); }
+        }
+
+        .contact-toggle {
+            margin-top: 40px; /* Biraz daha aşağıya alıp ayırdık */
+            background-color: var(--text-dark); /* Koyu zemin */
+            color: var(--accent-gold); /* Altın yazı */
+            border: 2px solid var(--accent-gold);
+            padding: 12px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            border-radius: 50px; /* Yuvarlak hatlı */
+            display: inline-block;
+            transition: all 0.3s ease;
+            
+            /* DİKKAT ÇEKİCİ ANİMASYON */
+            animation: pulse-gold 2s infinite;
+        }
+
+        .contact-toggle:hover {
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
+            animation: none; /* Üzerine gelince dursun */
+        }
+
+        #contact-form-container {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff8e1;
+            border: 3px double var(--primary-clay); /* Daha vurgulu çerçeve */
+            border-radius: 8px;
+            text-align: left;
+            position: relative;
+        }
+        
+        /* Formun üstüne küçük bir ok işareti */
+        #contact-form-container::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent var(--primary-clay) transparent;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--primary-clay);
+            background-color: #fff;
+            border-radius: 4px;
+            font-family: 'Lato', sans-serif;
+            box-sizing: border-box; 
+        }
+
+        .form-submit-btn {
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
+            border: none;
+            padding: 12px 20px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900; /* Daha kalın yazı */
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .form-submit-btn:hover {
+            background-color: #bfa12f;
+            letter-spacing: 1px;
         }
 
     </style>
@@ -262,7 +324,7 @@
         </div>
 
         <div id="visual-area">
-            <div id="placeholder-text">🔍 Eseri Yükleyiniz. </div>
+            <div id="placeholder-text">🔍 Eseri yükleyiniz.</div>
             <img id="uploaded-image" src="#" alt="Yüklenen Eser" />
         </div>
 
@@ -276,160 +338,3 @@
             </div>
             <div id="feedback-message"></div>
         </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
-    <script type="text/javascript">
-        // AYNI JS KODLARI (Sadece model linki güncel olmalı)
-        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
-
-        let model, webcam, labelContainer, maxPredictions;
-        let isModelLoading = false;
-
-        async function loadModel() {
-            if (model || isModelLoading) return;
-            
-            isModelLoading = true;
-            document.getElementById("loading-msg").style.display = "block";
-            
-            try {
-                const modelURL = URL + "model.json";
-                const metadataURL = URL + "metadata.json";
-                model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
-                
-                labelContainer = document.getElementById("label-container");
-                labelContainer.innerHTML = "";
-                for (let i = 0; i < maxPredictions; i++) {
-                    let div = document.createElement("div");
-                    div.className = "prediction-item";
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <span id="label-name-${i}">Sınıf ${i}</span>
-                            <span id="label-prob-${i}">%0</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div id="progress-${i}" class="progress-bar-fill"></div>
-                        </div>
-                    `;
-                    labelContainer.appendChild(div);
-                }
-            } catch (error) {
-                alert("Model yüklenirken hata oluştu. İnternet bağlantınızı kontrol edin.");
-            }
-            
-            isModelLoading = false;
-            document.getElementById("loading-msg").style.display = "none";
-        }
-
-        async function init() {
-            await loadModel();
-            
-            document.getElementById("placeholder-text").style.display = "none";
-            document.getElementById("uploaded-image").style.display = "none";
-            
-            const container = document.getElementById("visual-area");
-            const oldCanvas = container.querySelector("canvas");
-            if(oldCanvas) oldCanvas.remove();
-
-            const flip = true; 
-            webcam = new tmImage.Webcam(300, 300, flip); 
-            await webcam.setup(); 
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            container.appendChild(webcam.canvas);
-            
-            resetFeedback();
-        }
-
-        async function loop() {
-            webcam.update();
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
-
-        async function handleImageUpload(event) {
-            await loadModel();
-
-            if(webcam) {
-                await webcam.stop();
-                webcam = null;
-                const container = document.getElementById("visual-area");
-                const canvas = container.querySelector("canvas");
-                if(canvas) canvas.remove();
-            }
-
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("placeholder-text").style.display = "none";
-                    
-                    const imgElement = document.getElementById("uploaded-image");
-                    imgElement.src = e.target.result;
-                    imgElement.style.display = "block";
-
-                    imgElement.onload = async function() {
-                        await predictImage(imgElement);
-                    }
-                    
-                    resetFeedback();
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function predict() {
-            if(webcam && webcam.canvas) {
-                const prediction = await model.predict(webcam.canvas);
-                updateBars(prediction);
-            }
-        }
-
-        async function predictImage(imageElement) {
-            const prediction = await model.predict(imageElement);
-            updateBars(prediction);
-        }
-
-        function updateBars(prediction) {
-            for (let i = 0; i < maxPredictions; i++) {
-                const nameSpan = document.getElementById(`label-name-${i}`);
-                const probSpan = document.getElementById(`label-prob-${i}`);
-                const progressBar = document.getElementById(`progress-${i}`);
-
-                const probability = prediction[i].probability.toFixed(2);
-                const percent = Math.round(probability * 100) + "%";
-
-                nameSpan.innerHTML = prediction[i].className;
-                probSpan.innerHTML = percent;
-                progressBar.style.width = percent;
-            }
-        }
-
-        function resetFeedback() {
-            document.getElementById("feedback-section").style.display = "block";
-            document.getElementById("feedback-message").innerText = "";
-            document.getElementById("btn-yes").disabled = false;
-            document.getElementById("btn-no").disabled = false;
-        }
-
-        function giveFeedback(isCorrect) {
-            const messageArea = document.getElementById("feedback-message");
-            document.getElementById("btn-yes").disabled = true;
-            document.getElementById("btn-no").disabled = true;
-
-            if (isCorrect) {
-                messageArea.style.color = "#2e7d32";
-                messageArea.innerText = "✔ Katkınız için teşekkürler! Veri doğrulandı.";
-            } else {
-                messageArea.style.color = "#c62828";
-                messageArea.innerText = "✖ Geri bildirim alındı. Sistem güncellenecek.";
-            }
-        }
-    </script>
-</body>
-</html>
-
