@@ -8,12 +8,12 @@
     
     <style>
         :root {
-            --bg-paper: #fdf5e6;      /* Eski kağıt */
-            --primary-clay: #8d6e63;  /* Pişmiş toprak */
-            --accent-gold: #d4af37;   /* Altın */
-            --text-dark: #3e2723;     /* Koyu kahve */
-            --museum-green: #2e7d32;  /* Onay yeşili */
-            --ruin-red: #c62828;      /* Hata kırmızısı */
+            --bg-paper: #fdf5e6;
+            --primary-clay: #8d6e63;
+            --accent-gold: #d4af37;
+            --text-dark: #3e2723;
+            --museum-green: #2e7d32;
+            --ruin-red: #c62828;
         }
 
         body {
@@ -39,12 +39,12 @@
             outline: 6px solid var(--accent-gold); 
             box-shadow: 0 15px 30px rgba(62, 39, 35, 0.3);
             text-align: center;
-            max-width: 650px; /* Genişliği biraz artırdım, liste rahat sığsın */
+            max-width: 650px;
             width: 100%;
             position: relative;
         }
 
-        /* Köşe Süslemeleri */
+        /* Köşe Süsleri */
         .container::before, .container::after {
             content: '☩';
             position: absolute;
@@ -76,7 +76,7 @@
             color: var(--text-dark);
         }
 
-        /* BAŞLIK (Yanında logo yok) */
+        /* BAŞLIK (Emoji Yok) */
         h1 {
             font-family: 'Cinzel', serif;
             margin-bottom: 0.5rem;
@@ -97,7 +97,7 @@
             font-size: 1.1rem;
         }
 
-        /* YENİ YÖNERGE KUTUSU */
+        /* YÖNERGE KUTUSU */
         .instruction-container {
             background-color: rgba(141, 110, 99, 0.08);
             border: 1px dashed var(--primary-clay);
@@ -115,12 +115,12 @@
 
         .warning-text {
             font-size: 0.9rem;
-            color: #b71c1c; /* Uyarı kırmızımsı */
+            color: #b71c1c;
             margin-bottom: 10px;
             display: block;
         }
 
-        /* Yan Yana Medeniyet Listesi */
+        /* Medeniyet Listesi */
         .civ-list {
             display: flex;
             flex-wrap: wrap;
@@ -144,7 +144,7 @@
             gap: 5px;
         }
 
-        /* BUTONLAR */
+        /* BUTON GRUBU */
         .button-group {
             display: flex;
             justify-content: center;
@@ -152,6 +152,7 @@
             margin-bottom: 25px;
         }
 
+        /* Ortak Buton Stili (Emoji Solda) */
         .action-btn {
             background-color: var(--text-dark);
             color: var(--accent-gold);
@@ -167,7 +168,7 @@
             box-shadow: 0 4px 0 #281815;
             display: inline-flex; 
             align-items: center;
-            gap: 10px;
+            gap: 10px; /* İkon ile yazı arası boşluk */
             text-decoration: none;
         }
 
@@ -177,7 +178,6 @@
             box-shadow: 0 2px 0 #281815;
         }
         
-        /* Görüntü Alanı */
         #visual-area {
             margin-top: 10px;
             border-radius: 4px;
@@ -212,7 +212,7 @@
 
         canvas { z-index: 20; }
 
-        /* Sonuç Çubukları */
+        /* SONUÇLAR */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -245,7 +245,7 @@
             transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        /* Doğrulama Alanı */
+        /* GERİ BİLDİRİM (Doğru/Hatalı) */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -352,7 +352,7 @@
             animation: none;
         }
 
-        /* İLETİŞİM FORMU */
+        /* İLETİŞİM FORMU (Gizli) */
         #contact-form-container {
             display: none;
             margin-top: 20px;
@@ -486,7 +486,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // DİL YÖNETİMİ
+        // DİL VERİLERİ
         let currentLang = 'tr';
         
         const translations = {
@@ -542,7 +542,6 @@
             if (lang === 'tr') return originalName;
 
             const lower = originalName.toLowerCase();
-            // Türkçe -> İngilizce Eşleştirme
             if (lower.includes('yunan') || lower.includes('greek')) return 'Ancient Greek Pottery';
             if (lower.includes('iznik') || lower.includes('osmanlı') || lower.includes('ottoman')) return 'Ottoman Iznik Pottery';
             if (lower.includes('hitit') || lower.includes('hittite')) return 'Hittite Pottery';
@@ -572,7 +571,8 @@
 
         let model, webcam, labelContainer, maxPredictions;
         let isModelLoading = false;
-        let lastPrediction = null;
+        let lastPrediction = null; 
+        let highestClass = ""; // Veri toplamak için en yüksek tahmini tutacağız
 
         async function loadModel() {
             if (model || isModelLoading) return;
@@ -651,12 +651,22 @@
 
         function updateBars(prediction) {
             lastPrediction = prediction;
+            let maxProb = 0;
+            highestClass = ""; // Sıfırla
+
             for (let i = 0; i < maxPredictions; i++) {
                 const nameSpan = document.getElementById(`label-name-${i}`);
                 const probSpan = document.getElementById(`label-prob-${i}`);
                 const progressBar = document.getElementById(`progress-${i}`);
                 
                 let displayName = prediction[i].className;
+                
+                // En yüksek oranı bul ve kaydet (Veri toplama için)
+                if (prediction[i].probability > maxProb) {
+                    maxProb = prediction[i].probability;
+                    highestClass = displayName;
+                }
+
                 if(currentLang === 'en') {
                     displayName = getTranslatedClassName(displayName, 'en');
                 }
@@ -676,10 +686,13 @@
             document.getElementById("btn-no").disabled = false;
         }
 
+        // --- VERİ TOPLAMA VE GERİ BİLDİRİM KISMI ---
         function giveFeedback(isCorrect) {
             const messageArea = document.getElementById("feedback-message");
             document.getElementById("btn-yes").disabled = true;
             document.getElementById("btn-no").disabled = true;
+
+            // Ekrana mesajı bas
             if (isCorrect) {
                 messageArea.style.color = "#2e7d32";
                 messageArea.innerText = currentLang === 'tr' ? "✔ Katkınız için teşekkürler!" : "✔ Thanks for your contribution!";
@@ -687,6 +700,31 @@
                 messageArea.style.color = "#c62828";
                 messageArea.innerText = currentLang === 'tr' ? "✖ Geri bildirim alındı." : "✖ Feedback received.";
             }
+
+            // FORMSPREE'YE VERİ GÖNDERME (ARKA PLANDA)
+            sendDataToFormspree(isCorrect);
+        }
+
+        function sendDataToFormspree(isCorrect) {
+            // Hangi sınıfın tahmin edildiğini ve kullanıcının ne dediğini gönderiyoruz
+            const data = {
+                message: isCorrect ? "Kullanıcı DOĞRU dedi" : "Kullanıcı HATALI dedi",
+                tahmin_edilen_sinif: highestClass, // En yüksek oranlı sınıf
+                kullanici_karari: isCorrect ? "DOGRU" : "HATALI",
+                tarih: new Date().toLocaleString()
+            };
+
+            // Formspree'ye sessizce POST isteği atıyoruz
+            fetch("https://formspree.io/f/mwvpwzzj", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => console.log("Veri gönderildi"))
+            .catch(error => console.log("Veri gönderme hatası", error));
         }
 
         function toggleContactForm() {
