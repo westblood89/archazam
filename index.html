@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* CSS AYARLARI */
+        /* --- TASARIM VE STİLLER (CSS) --- */
         :root {
             --bg-paper: #fdf5e6;
             --primary-clay: #8d6e63;
@@ -105,7 +105,13 @@
             text-align: center;
         }
 
-        .instruction-text { font-size: 1rem; margin-bottom: 10px; color: var(--text-dark); }
+        .instruction-text { 
+            font-size: 1rem; 
+            margin-bottom: 15px; 
+            color: var(--text-dark); 
+            line-height: 1.5; /* Satır arası boşluk */
+        }
+        
         .warning-text { font-size: 0.9rem; color: #b71c1c; margin-bottom: 10px; display: block; }
 
         .civ-list {
@@ -262,7 +268,7 @@
         
         <div class="instruction-container">
             <div class="instruction-text" id="instr-text">
-                Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.
+                Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin.<br>Yapay zeka saniyeler içinde analiz etsin.
             </div>
             <span class="warning-text" id="warn-text">
                 ⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:
@@ -337,12 +343,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // DİL VERİLERİ
+        // --- AYARLAR ---
         let currentLang = 'tr';
+        
+        // SENİN VERDİĞİN YENİ LİNK BURADA:
+        const SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzGeukfxAnDZBBDEYZEHc9eTd08spVfCSTFOqVBM3iiTIQAinFRrOhsgzdEw0ttyp5QA/exec";
+        
+        const TM_MODEL_URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
+
         const translations = {
             'tr': {
                 'subtitle-text': 'Eski Medeniyetlerin İzinde...',
-                'instr-text': 'Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.',
+                'instr-text': 'Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin.<br>Yapay zeka saniyeler içinde analiz etsin.',
                 'warn-text': '⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:',
                 'civ-1': '🏛️ Antik Yunan Seramiği',
                 'civ-2': '🌷 Osmanlı İznik Çinisi',
@@ -366,7 +378,7 @@
             },
             'en': {
                 'subtitle-text': 'Tracing Ancient Civilizations...',
-                'instr-text': 'Take a photo or upload one from your device to identify the historical artifact. AI analyzes it in seconds.',
+                'instr-text': 'Take a photo or upload one from your device to identify the historical artifact.<br>AI analyzes it in seconds.',
                 'warn-text': '⚠️ The system currently <strong>only</strong> recognizes the following civilizations:',
                 'civ-1': '🏛️ Ancient Greek Pottery',
                 'civ-2': '🌷 Ottoman Iznik Pottery',
@@ -413,7 +425,6 @@
         }
 
         // --- MODEL ---
-        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
         let model, webcam, labelContainer, maxPredictions;
         let isModelLoading = false;
         let lastPrediction = null; 
@@ -424,8 +435,8 @@
             isModelLoading = true;
             document.getElementById("loading-msg").style.display = "block";
             try {
-                const modelURL = URL + "model.json";
-                const metadataURL = URL + "metadata.json";
+                const modelURL = TM_MODEL_URL + "model.json";
+                const metadataURL = TM_MODEL_URL + "metadata.json";
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
                 labelContainer = document.getElementById("label-container");
@@ -520,6 +531,8 @@
             const messageArea = document.getElementById("feedback-message");
             document.getElementById("btn-yes").disabled = true;
             document.getElementById("btn-no").disabled = true;
+            
+            // Kullanıcıya mesaj göster
             if (isCorrect) {
                 messageArea.style.color = "#2e7d32";
                 messageArea.innerText = currentLang === 'tr' ? "✔ Katkınız için teşekkürler!" : "✔ Thanks for your contribution!";
@@ -527,28 +540,28 @@
                 messageArea.style.color = "#c62828";
                 messageArea.innerText = currentLang === 'tr' ? "✖ Geri bildirim alındı." : "✖ Feedback received.";
             }
-            sendDataToExcel(isCorrect);
-        }
 
-        // --- GOOGLE SHEETS ENTEGRASYONU ---
-        function sendDataToExcel(isCorrect) {
+            // --- GOOGLE SHEETS VERİ GÖNDERME ---
             
-            // 1. ADIMDA ALDIĞIN UZUN LİNKİ BURAYA YAPIŞTIR:
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwctP04h57IXkZjm8X69YjMFMeCI1eWnOPyKJL-wX3xTRj5DcEzFTzXie-vPDfZ2CmdsQ/exec"; 
+            // Eğer kullanıcı linki yapıştırmayı unuttuysa hata vermesin
+            if(SHEET_SCRIPT_URL.includes("BURAYA")) {
+                console.warn("Google Script linki eklenmemiş!");
+                return;
+            }
 
-            // Gönderilecek verileri paketliyoruz
+            // Form Data oluştur
             const formData = new FormData();
             formData.append("Karar", isCorrect ? "DOGRU" : "HATALI");
-            formData.append("Tahmin", highestClass); // En yüksek tahmin edilen sınıf
+            formData.append("Tahmin", highestClass); 
             formData.append("Dil", currentLang);
 
-            // Google'a gönderiyoruz
-            fetch(SCRIPT_URL, {
+            // Fetch ile gönder
+            fetch(SHEET_SCRIPT_URL, {
                 method: "POST",
-                mode: "no-cors", // Bu, tarayıcı hatasını engeller
+                mode: "no-cors", 
                 body: formData
             })
-            .then(() => console.log("Veri başarıyla yollandı."))
+            .then(() => console.log("Veri Google Sheets'e yollandı."))
             .catch(error => console.error("Hata:", error));
         }
 
