@@ -44,7 +44,6 @@
             position: relative;
         }
 
-        /* Köşe Süsleri */
         .container::before, .container::after {
             content: '☩';
             position: absolute;
@@ -54,7 +53,7 @@
         .container::before { top: 10px; left: 10px; }
         .container::after { top: 10px; right: 10px; }
 
-        /* DİL BUTONU (Sağ Üst) */
+        /* DİL BUTONU */
         #lang-btn {
             position: absolute;
             top: 15px;
@@ -71,12 +70,9 @@
             transition: all 0.3s;
             z-index: 100;
         }
-        #lang-btn:hover {
-            background-color: var(--accent-gold);
-            color: var(--text-dark);
-        }
+        #lang-btn:hover { background-color: var(--accent-gold); color: var(--text-dark); }
 
-        /* BAŞLIK (Emoji Yok) */
+        /* BAŞLIK */
         h1 {
             font-family: 'Cinzel', serif;
             margin-bottom: 0.5rem;
@@ -107,20 +103,9 @@
             text-align: center;
         }
 
-        .instruction-text {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            color: var(--text-dark);
-        }
+        .instruction-text { font-size: 1rem; margin-bottom: 10px; color: var(--text-dark); }
+        .warning-text { font-size: 0.9rem; color: #b71c1c; margin-bottom: 10px; display: block; }
 
-        .warning-text {
-            font-size: 0.9rem;
-            color: #b71c1c;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        /* Medeniyet Listesi */
         .civ-list {
             display: flex;
             flex-wrap: wrap;
@@ -145,14 +130,8 @@
         }
 
         /* BUTON GRUBU */
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+        .button-group { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
 
-        /* Ortak Buton Stili (Emoji Solda) */
         .action-btn {
             background-color: var(--text-dark);
             color: var(--accent-gold);
@@ -168,15 +147,10 @@
             box-shadow: 0 4px 0 #281815;
             display: inline-flex; 
             align-items: center;
-            gap: 10px; /* İkon ile yazı arası boşluk */
+            gap: 10px;
             text-decoration: none;
         }
-
-        .action-btn:hover {
-            background-color: var(--primary-clay);
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #281815;
-        }
+        .action-btn:hover { background-color: var(--primary-clay); transform: translateY(2px); box-shadow: 0 2px 0 #281815; }
         
         #visual-area {
             margin-top: 10px;
@@ -202,17 +176,9 @@
             padding: 0 20px;
         }
 
-        #uploaded-image {
-            max-width: 100%;
-            max-height: 320px;
-            display: none;
-            z-index: 20;
-            border: 2px solid #fff;
-        }
-
+        #uploaded-image { max-width: 100%; max-height: 320px; display: none; z-index: 20; border: 2px solid #fff; }
         canvas { z-index: 20; }
 
-        /* SONUÇLAR */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -222,519 +188,4 @@
             border: 1px dashed var(--primary-clay);
         }
 
-        .prediction-item {
-            margin-bottom: 12px;
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .progress-bar-bg {
-            background-color: #d7ccc8;
-            border-radius: 4px;
-            height: 12px;
-            width: 100%;
-            margin-top: 5px;
-            overflow: hidden;
-            border: 1px solid #a1887f;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-gold), #ff8f00);
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
-        }
-
-        /* GERİ BİLDİRİM (Doğru/Hatalı) */
-        .feedback-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid var(--primary-clay);
-            display: none;
-        }
-        
-        .feedback-question {
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .feedback-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .btn-yes, .btn-no {
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 120px;
-            font-weight: bold;
-            font-family: 'Cinzel', serif;
-            transition: all 0.3s;
-        }
-
-        .btn-yes { background-color: var(--museum-green); }
-        .btn-no { background-color: var(--ruin-red); }
-
-        button:disabled { background-color: #9e9e9e !important; cursor: not-allowed; }
-
-        #feedback-message {
-            margin-top: 15px;
-            font-weight: 600;
-            color: var(--text-dark);
-            min-height: 20px;
-        }
-
-        #loading-msg {
-            color: var(--primary-clay);
-            font-weight: bold;
-            display: none;
-            margin-bottom: 10px;
-            background: rgba(212, 175, 55, 0.2);
-            padding: 5px;
-            border-radius: 4px;
-        }
-
-        /* DAVET KARTI */
-        .feedback-invite-card {
-            margin-top: 40px;
-            background-color: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--accent-gold);
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .invite-icon { font-size: 2rem; margin-bottom: 10px; }
-        .invite-text h3 {
-            font-family: 'Cinzel', serif;
-            margin: 0 0 5px 0;
-            color: var(--text-dark);
-            font-size: 1.2rem;
-        }
-
-        @keyframes subtle-pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(141, 110, 99, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(141, 110, 99, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(141, 110, 99, 0); }
-        }
-
-        .contact-pulse-btn {
-            background-color: var(--primary-clay);
-            color: #fff;
-            border: none;
-            padding: 12px 30px;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s;
-            animation: subtle-pulse 2s infinite;
-            margin-top: 10px;
-        }
-
-        .contact-pulse-btn:hover {
-            background-color: var(--text-dark);
-            animation: none;
-        }
-
-        /* İLETİŞİM FORMU (Gizli) */
-        #contact-form-container {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #fff8e1;
-            border: 3px double var(--primary-clay);
-            border-radius: 8px;
-            text-align: left;
-            position: relative;
-        }
-        
-        #contact-form-container::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 0 10px 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent var(--primary-clay) transparent;
-        }
-
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid var(--primary-clay);
-            background-color: #fff;
-            border-radius: 4px;
-            font-family: 'Lato', sans-serif;
-            box-sizing: border-box; 
-        }
-
-        .form-submit-btn {
-            background-color: var(--accent-gold);
-            color: var(--text-dark);
-            border: none;
-            padding: 12px 20px;
-            font-family: 'Cinzel', serif;
-            font-weight: 900;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1.1rem;
-            transition: 0.3s;
-        }
-        .form-submit-btn:hover { background-color: #bfa12f; letter-spacing: 1px; }
-
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <button id="lang-btn" onclick="toggleLanguage()">EN</button>
-
-        <h1>ARCHAZAM</h1>
-        <p class="subtitle" id="subtitle-text">Eski Medeniyetlerin İzinde...</p>
-        
-        <div class="instruction-container">
-            <div class="instruction-text" id="instr-text">
-                Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.
-            </div>
-            <span class="warning-text" id="warn-text">
-                ⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:
-            </span>
-            <div class="civ-list">
-                <span class="civ-tag" id="civ-1">🏛️ Antik Yunan Seramiği</span>
-                <span class="civ-tag" id="civ-2">🌷 Osmanlı İznik Çinisi</span>
-                <span class="civ-tag" id="civ-3">🦁 Hitit Seramiği</span>
-                <span class="civ-tag" id="civ-4">🧱 Sümer Seramiği</span>
-                <span class="civ-tag" id="civ-5">🦅 Nazca (Peru) Seramiği</span>
-            </div>
-        </div>
-        
-        <div id="loading-msg">🏺 Model sandıktan çıkarılıyor, bekleyin...</div>
-
-        <div class="button-group">
-            <button class="action-btn" onclick="init()">
-                <span id="btn-cam-text">📷 Fotoğraf Çek</span>
-            </button>
-            <label for="imageUpload" class="action-btn">
-                <span id="btn-upload-text">📂 Dosyadan Yükle</span>
-            </label>
-            <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
-        </div>
-
-        <div id="visual-area">
-            <div id="placeholder-text">🔍 Eseri yükleyiniz.</div>
-            <img id="uploaded-image" src="#" alt="Yüklenen Eser" />
-        </div>
-
-        <div id="label-container"></div>
-
-        <div id="feedback-section" class="feedback-section">
-            <div class="feedback-question" id="feedback-q">📜 Bu analiz tarihi gerçeklerle uyuşuyor mu?</div>
-            <div class="feedback-buttons">
-                <button id="btn-yes" class="btn-yes" onclick="giveFeedback(true)">✔ DOĞRU</button>
-                <button id="btn-no" class="btn-no" onclick="giveFeedback(false)">✖ HATALI</button>
-            </div>
-            <div id="feedback-message"></div>
-        </div>
-
-        <div class="feedback-invite-card">
-            <div class="invite-icon">✨</div>
-            <div class="invite-text">
-                <h3 id="invite-title">Görüşleriniz Bizim İçin Değerli</h3>
-            </div>
-            <button class="contact-pulse-btn" onclick="toggleContactForm()">
-                <span id="btn-contact-text">✒️ Bize Yazın</span>
-            </button>
-        </div>
-        
-        <div id="contact-form-container">
-            <h3 style="margin-top:0; color:var(--text-dark); font-family:'Cinzel', serif; text-align:center;" id="form-title">
-                📝 İletişim Formu
-            </h3>
-            
-            <form action="https://formspree.io/f/mwvpwzzj" method="POST">
-                <label style="font-weight:bold; font-size:0.9rem;" id="lbl-email">E-postanız (İsteğe bağlı):</label>
-                <input type="email" name="email" class="form-input" placeholder="ornek@okul.com">
-                
-                <label style="font-weight:bold; font-size:0.9rem;" id="lbl-msg">Mesajınız:</label>
-                <textarea name="message" class="form-textarea" rows="4" placeholder="..."></textarea>
-                
-                <button type="submit" class="form-submit-btn" id="btn-send">GÖNDER</button>
-            </form>
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
-    <script type="text/javascript">
-        // DİL VERİLERİ
-        let currentLang = 'tr';
-        
-        const translations = {
-            'tr': {
-                'subtitle-text': 'Eski Medeniyetlerin İzinde...',
-                'instr-text': 'Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.',
-                'warn-text': '⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:',
-                'civ-1': '🏛️ Antik Yunan Seramiği',
-                'civ-2': '🌷 Osmanlı İznik Çinisi',
-                'civ-3': '🦁 Hitit Seramiği',
-                'civ-4': '🧱 Sümer Seramiği',
-                'civ-5': '🦅 Nazca (Peru) Seramiği',
-                'btn-cam-text': '📷 Fotoğraf Çek',
-                'btn-upload-text': '📂 Dosyadan Yükle',
-                'placeholder-text': '🔍 Eseri yükleyiniz.',
-                'feedback-q': '📜 Bu analiz tarihi gerçeklerle uyuşuyor mu?',
-                'btn-yes': '✔ DOĞRU',
-                'btn-no': '✖ HATALI',
-                'invite-title': 'Görüşleriniz Bizim İçin Değerli',
-                'btn-contact-text': '✒️ Bize Yazın',
-                'form-title': '📝 İletişim Formu',
-                'lbl-email': 'E-postanız (İsteğe bağlı):',
-                'lbl-msg': 'Mesajınız:',
-                'btn-send': 'GÖNDER',
-                'loading-msg': '🏺 Model sandıktan çıkarılıyor, bekleyin...'
-            },
-            'en': {
-                'subtitle-text': 'Tracing Ancient Civilizations...',
-                'instr-text': 'Take a photo or upload one from your device to identify the historical artifact. AI analyzes it in seconds.',
-                'warn-text': '⚠️ The system currently <strong>only</strong> recognizes the following civilizations:',
-                'civ-1': '🏛️ Ancient Greek Pottery',
-                'civ-2': '🌷 Ottoman Iznik Pottery',
-                'civ-3': '🦁 Hittite Pottery',
-                'civ-4': '🧱 Sumerian Pottery',
-                'civ-5': '🦅 Nazca (Peru) Pottery',
-                'btn-cam-text': '📷 Take Photo',
-                'btn-upload-text': '📂 Upload File',
-                'placeholder-text': '🔍 Upload an artifact.',
-                'feedback-q': '📜 Is this analysis historically accurate?',
-                'btn-yes': '✔ CORRECT',
-                'btn-no': '✖ WRONG',
-                'invite-title': 'We Value Your Feedback',
-                'btn-contact-text': '✒️ Contact Us',
-                'form-title': '📝 Contact Form',
-                'lbl-email': 'Your Email (Optional):',
-                'lbl-msg': 'Your Message:',
-                'btn-send': 'SEND',
-                'loading-msg': '🏺 Excavating the model, please wait...'
-            }
-        };
-
-        function getTranslatedClassName(originalName, lang) {
-            if (lang === 'tr') return originalName;
-
-            const lower = originalName.toLowerCase();
-            if (lower.includes('yunan') || lower.includes('greek')) return 'Ancient Greek Pottery';
-            if (lower.includes('iznik') || lower.includes('osmanlı') || lower.includes('ottoman')) return 'Ottoman Iznik Pottery';
-            if (lower.includes('hitit') || lower.includes('hittite')) return 'Hittite Pottery';
-            if (lower.includes('sümer') || lower.includes('sumer') || lower.includes('çin') || lower.includes('china')) return 'Sumerian Pottery';
-            if (lower.includes('nazca')) return 'Nazca (Peru) Pottery';
-            
-            return originalName; 
-        }
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'tr' ? 'en' : 'tr';
-            document.getElementById('lang-btn').innerText = currentLang === 'tr' ? 'EN' : 'TR';
-            
-            const t = translations[currentLang];
-            for (const [id, text] of Object.entries(t)) {
-                const el = document.getElementById(id);
-                if (el) el.innerHTML = text;
-            }
-
-            if (lastPrediction) {
-                updateBars(lastPrediction);
-            }
-        }
-
-        // --- MODEL & JS ---
-        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
-
-        let model, webcam, labelContainer, maxPredictions;
-        let isModelLoading = false;
-        let lastPrediction = null; 
-        let highestClass = ""; // Veri toplamak için en yüksek tahmini tutacağız
-
-        async function loadModel() {
-            if (model || isModelLoading) return;
-            isModelLoading = true;
-            document.getElementById("loading-msg").style.display = "block";
-            try {
-                const modelURL = URL + "model.json";
-                const metadataURL = URL + "metadata.json";
-                model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
-                labelContainer = document.getElementById("label-container");
-                labelContainer.innerHTML = "";
-                for (let i = 0; i < maxPredictions; i++) {
-                    let div = document.createElement("div");
-                    div.className = "prediction-item";
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <span id="label-name-${i}">Sınıf ${i}</span>
-                            <span id="label-prob-${i}">%0</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div id="progress-${i}" class="progress-bar-fill"></div>
-                        </div>
-                    `;
-                    labelContainer.appendChild(div);
-                }
-            } catch (error) {
-                alert("Model hatası / Model Error");
-            }
-            isModelLoading = false;
-            document.getElementById("loading-msg").style.display = "none";
-        }
-
-        async function init() {
-            await loadModel();
-            document.getElementById("placeholder-text").style.display = "none";
-            document.getElementById("uploaded-image").style.display = "none";
-            const container = document.getElementById("visual-area");
-            const oldCanvas = container.querySelector("canvas");
-            if(oldCanvas) oldCanvas.remove();
-            const flip = true; 
-            webcam = new tmImage.Webcam(300, 300, flip); 
-            await webcam.setup(); 
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-            container.appendChild(webcam.canvas);
-            resetFeedback();
-        }
-
-        async function loop() {
-            webcam.update();
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
-
-        async function handleImageUpload(event) {
-            await loadModel();
-            if(webcam) { await webcam.stop(); webcam = null; const container = document.getElementById("visual-area"); const canvas = container.querySelector("canvas"); if(canvas) canvas.remove(); }
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("placeholder-text").style.display = "none";
-                    const imgElement = document.getElementById("uploaded-image");
-                    imgElement.src = e.target.result;
-                    imgElement.style.display = "block";
-                    imgElement.onload = async function() { await predictImage(imgElement); }
-                    resetFeedback();
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function predict() { if(webcam && webcam.canvas) { const prediction = await model.predict(webcam.canvas); updateBars(prediction); } }
-        async function predictImage(imageElement) { const prediction = await model.predict(imageElement); updateBars(prediction); }
-
-        function updateBars(prediction) {
-            lastPrediction = prediction;
-            let maxProb = 0;
-            highestClass = ""; // Sıfırla
-
-            for (let i = 0; i < maxPredictions; i++) {
-                const nameSpan = document.getElementById(`label-name-${i}`);
-                const probSpan = document.getElementById(`label-prob-${i}`);
-                const progressBar = document.getElementById(`progress-${i}`);
-                
-                let displayName = prediction[i].className;
-                
-                // En yüksek oranı bul ve kaydet (Veri toplama için)
-                if (prediction[i].probability > maxProb) {
-                    maxProb = prediction[i].probability;
-                    highestClass = displayName;
-                }
-
-                if(currentLang === 'en') {
-                    displayName = getTranslatedClassName(displayName, 'en');
-                }
-
-                const probability = prediction[i].probability.toFixed(2);
-                const percent = Math.round(probability * 100) + "%";
-                nameSpan.innerHTML = displayName;
-                probSpan.innerHTML = percent;
-                progressBar.style.width = percent;
-            }
-        }
-
-        function resetFeedback() {
-            document.getElementById("feedback-section").style.display = "block";
-            document.getElementById("feedback-message").innerText = "";
-            document.getElementById("btn-yes").disabled = false;
-            document.getElementById("btn-no").disabled = false;
-        }
-
-        // --- VERİ TOPLAMA VE GERİ BİLDİRİM KISMI ---
-        function giveFeedback(isCorrect) {
-            const messageArea = document.getElementById("feedback-message");
-            document.getElementById("btn-yes").disabled = true;
-            document.getElementById("btn-no").disabled = true;
-
-            // Ekrana mesajı bas
-            if (isCorrect) {
-                messageArea.style.color = "#2e7d32";
-                messageArea.innerText = currentLang === 'tr' ? "✔ Katkınız için teşekkürler!" : "✔ Thanks for your contribution!";
-            } else {
-                messageArea.style.color = "#c62828";
-                messageArea.innerText = currentLang === 'tr' ? "✖ Geri bildirim alındı." : "✖ Feedback received.";
-            }
-
-            // FORMSPREE'YE VERİ GÖNDERME (ARKA PLANDA)
-            sendDataToFormspree(isCorrect);
-        }
-
-        function sendDataToFormspree(isCorrect) {
-            // Hangi sınıfın tahmin edildiğini ve kullanıcının ne dediğini gönderiyoruz
-            const data = {
-                message: isCorrect ? "Kullanıcı DOĞRU dedi" : "Kullanıcı HATALI dedi",
-                tahmin_edilen_sinif: highestClass, // En yüksek oranlı sınıf
-                kullanici_karari: isCorrect ? "DOGRU" : "HATALI",
-                tarih: new Date().toLocaleString()
-            };
-
-            // Formspree'ye sessizce POST isteği atıyoruz
-            fetch("https://formspree.io/f/mwvpwzzj", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => console.log("Veri gönderildi"))
-            .catch(error => console.log("Veri gönderme hatası", error));
-        }
-
-        function toggleContactForm() {
-            const formContainer = document.getElementById("contact-form-container");
-            if (formContainer.style.display === "none" || formContainer.style.display === "") {
-                formContainer.style.display = "block";
-            } else {
-                formContainer.style.display = "none";
-            }
-        }
-    </script>
-</body>
-</html>
+        .prediction-item { margin-bottom: 12px; font-size
