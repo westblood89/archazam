@@ -416,6 +416,10 @@
         function toggleLanguage() {
             currentLang = currentLang === 'tr' ? 'en' : 'tr';
             document.getElementById('lang-btn').innerText = currentLang === 'tr' ? 'EN' : 'TR';
+            
+            // DİL DEĞİŞİNCE HTML LANG ETİKETİNİ GÜNCELLE (Bu, İ/I sorununu çözer)
+            document.documentElement.lang = currentLang;
+
             const t = translations[currentLang];
             for (const [id, text] of Object.entries(t)) {
                 const el = document.getElementById(id);
@@ -532,7 +536,6 @@
             document.getElementById("btn-yes").disabled = true;
             document.getElementById("btn-no").disabled = true;
             
-            // Kullanıcıya mesaj göster
             if (isCorrect) {
                 messageArea.style.color = "#2e7d32";
                 messageArea.innerText = currentLang === 'tr' ? "✔ Katkınız için teşekkürler!" : "✔ Thanks for your contribution!";
@@ -542,24 +545,15 @@
             }
 
             // --- GOOGLE SHEETS VERİ GÖNDERME ---
-            
-            // Eğer kullanıcı linki yapıştırmayı unuttuysa hata vermesin
-            if(SHEET_SCRIPT_URL.includes("BURAYA")) {
-                console.warn("Google Script linki eklenmemiş!");
-                return;
-            }
+            const params = new URLSearchParams();
+            params.append("Karar", isCorrect ? "DOGRU" : "HATALI");
+            params.append("Tahmin", highestClass); 
+            params.append("Dil", currentLang);
 
-            // Form Data oluştur
-            const formData = new FormData();
-            formData.append("Karar", isCorrect ? "DOGRU" : "HATALI");
-            formData.append("Tahmin", highestClass); 
-            formData.append("Dil", currentLang);
-
-            // Fetch ile gönder
             fetch(SHEET_SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors", 
-                body: formData
+                body: params
             })
             .then(() => console.log("Veri Google Sheets'e yollandı."))
             .catch(error => console.error("Hata:", error));
