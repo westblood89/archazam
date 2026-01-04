@@ -1,3 +1,16 @@
+Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanımlayamam, sadece bu 5 tanesini biliyorum" demek, beklentiyi yönetir ve uygulamanın hatalı sanılmasını engeller. Yabancı takımlar için de dil desteği (TR/EN) eklemek projeyi çok profesyonel gösterir.
+
+İstediğin tüm değişiklikleri tek bir kodda birleştirdim:
+
+1. **Dil Değiştirme (TR | EN):** Sağ üst köşeye şık bir buton ekledim. Tıklayınca tüm metinler ve **sonuçlardaki sınıf isimleri** İngilizceye/Türkçeye dönüyor.
+2. **Büyüteç İkonu:** Başlıktaki müze simgesi gitti, yerine dedektif büyüteci (🧐) geldi.
+3. **Açıklayıcı Yönerge:** Başlığın altına, sistemin sadece 5 medeniyeti tanıdığını belirten bir uyarı metni ve medeniyet listesi ekledim.
+4. **Sadeleştirilmiş Geri Bildirim:** O uzun cümleyi sildim. Sadece başlık ve yanıp sönen buton kaldı.
+5. **Garantili İkonlar:** Tüm butonlarda emojiler sol tarafta.
+
+İşte ARCHAZAM'ın Uluslararası Sürümü:
+
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -8,19 +21,18 @@
     
     <style>
         :root {
-            --bg-paper: #fdf5e6;      /* Eski kağıt */
-            --primary-clay: #8d6e63;  /* Pişmiş toprak */
-            --accent-gold: #d4af37;   /* Altın */
-            --text-dark: #3e2723;     /* Koyu kahve */
-            --museum-green: #2e7d32;  /* Onay yeşili */
-            --ruin-red: #c62828;      /* Hata kırmızısı */
+            --bg-paper: #fdf5e6;
+            --primary-clay: #8d6e63;
+            --accent-gold: #d4af37;
+            --text-dark: #3e2723;
+            --museum-green: #2e7d32;
+            --ruin-red: #c62828;
         }
 
         body {
             font-family: 'Lato', sans-serif;
             background-color: var(--bg-paper);
             color: var(--text-dark);
-            /* Arka plan dokusu */
             background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
             background-size: 20px 20px;
             display: flex;
@@ -36,7 +48,6 @@
             background-color: #fff8e1;
             padding: 2.5rem;
             border-radius: 4px;
-            /* Çift çerçeve efekti */
             border: 2px solid var(--primary-clay);
             outline: 6px solid var(--accent-gold); 
             box-shadow: 0 15px 30px rgba(62, 39, 35, 0.3);
@@ -46,7 +57,6 @@
             position: relative;
         }
 
-        /* Köşe süslemeleri */
         .container::before, .container::after {
             content: '☩';
             position: absolute;
@@ -55,6 +65,28 @@
         }
         .container::before { top: 10px; left: 10px; }
         .container::after { top: 10px; right: 10px; }
+
+        /* Dil Butonu (Sağ Üst) */
+        #lang-btn {
+            position: absolute;
+            top: 10px;
+            right: 40px; /* Süslemeden biraz içeride */
+            background-color: var(--text-dark);
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 5px 10px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        #lang-btn:hover {
+            background-color: var(--accent-gold);
+            color: var(--text-dark);
+        }
 
         h1 {
             font-family: 'Cinzel', serif;
@@ -71,12 +103,26 @@
         
         p.subtitle {
             color: #6d4c41;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             font-style: italic;
             font-size: 1.1rem;
         }
 
-        /* --- BUTONLAR --- */
+        /* Yönerge Kutusu */
+        .instruction-box {
+            background-color: rgba(141, 110, 99, 0.1);
+            border-left: 4px solid var(--accent-gold);
+            padding: 10px 15px;
+            margin-bottom: 25px;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #4e342e;
+        }
+        
+        .instruction-box strong {
+            color: var(--text-dark);
+        }
+
         .button-group {
             display: flex;
             justify-content: center;
@@ -97,7 +143,7 @@
             font-weight: 700;
             text-transform: uppercase;
             box-shadow: 0 4px 0 #281815;
-            display: inline-flex; /* İkon ve yazıyı hizalamak için */
+            display: inline-flex; 
             align-items: center;
             gap: 10px;
             text-decoration: none;
@@ -109,7 +155,6 @@
             box-shadow: 0 2px 0 #281815;
         }
         
-        /* Görüntü Alanı */
         #visual-area {
             margin-top: 10px;
             border-radius: 4px;
@@ -131,6 +176,7 @@
             position: absolute;
             z-index: 10;
             opacity: 0.8;
+            padding: 0 20px;
         }
 
         #uploaded-image {
@@ -143,7 +189,6 @@
 
         canvas { z-index: 20; }
 
-        /* Sonuç Çubukları */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -176,7 +221,6 @@
             transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        /* --- DOĞRULAMA ALANI --- */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -232,7 +276,7 @@
             border-radius: 4px;
         }
 
-        /* --- YENİ DAVET KARTI & BUTON STİLİ --- */
+        /* Davet Kartı ve İletişim Formu */
         .feedback-invite-card {
             margin-top: 40px;
             background-color: rgba(212, 175, 55, 0.1);
@@ -246,11 +290,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .invite-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
+        .invite-icon { font-size: 2rem; margin-bottom: 10px; }
         .invite-text h3 {
             font-family: 'Cinzel', serif;
             margin: 0 0 5px 0;
@@ -258,13 +298,6 @@
             font-size: 1.2rem;
         }
 
-        .invite-text p {
-            margin: 0 0 15px 0;
-            font-size: 0.95rem;
-            color: #5d4037;
-        }
-
-        /* Yanıp Sönen Buton Animasyonu */
         @keyframes subtle-pulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(141, 110, 99, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(141, 110, 99, 0); }
@@ -286,6 +319,7 @@
             gap: 10px;
             transition: background 0.3s;
             animation: subtle-pulse 2s infinite;
+            margin-top: 10px;
         }
 
         .contact-pulse-btn:hover {
@@ -293,7 +327,6 @@
             animation: none;
         }
 
-        /* İletişim Formu */
         #contact-form-container {
             display: none;
             margin-top: 20px;
@@ -339,28 +372,37 @@
             font-size: 1.1rem;
             transition: 0.3s;
         }
-        .form-submit-btn:hover {
-            background-color: #bfa12f;
-            letter-spacing: 1px;
-        }
+        .form-submit-btn:hover { background-color: #bfa12f; letter-spacing: 1px; }
 
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>ARCHAZAM 🏛️</h1>
-        <p class="subtitle">Eski Medeniyetlerin İzinde...</p>
+        <button id="lang-btn" onclick="toggleLanguage()">EN</button>
+
+        <h1>ARCHAZAM 🧐</h1>
+        <p class="subtitle" id="subtitle-text">Eski Medeniyetlerin İzinde...</p>
+        
+        <div class="instruction-box">
+            <span id="instruction-main">⚠️ Sistem şu an <strong>SADECE</strong> aşağıdaki medeniyetleri tanır:</span>
+            <ul style="margin: 5px 0 0 20px; padding: 0;">
+                <li id="list-1">Antik Yunan</li>
+                <li id="list-2">Osmanlı (İznik)</li>
+                <li id="list-3">Hitit</li>
+                <li id="list-4">Sümer (Mezopotamya)</li>
+                <li id="list-5">Nazca (Peru)</li>
+            </ul>
+        </div>
         
         <div id="loading-msg">🏺 Model sandıktan çıkarılıyor, bekleyin...</div>
 
         <div class="button-group">
             <button class="action-btn" onclick="init()">
-                📷 Fotoğraf Çek
+                <span id="btn-cam-text">📷 Fotoğraf Çek</span>
             </button>
-            
             <label for="imageUpload" class="action-btn">
-                📂 Dosyadan Yükle
+                <span id="btn-upload-text">📂 Dosyadan Yükle</span>
             </label>
             <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
         </div>
@@ -373,7 +415,7 @@
         <div id="label-container"></div>
 
         <div id="feedback-section" class="feedback-section">
-            <div class="feedback-question">📜 Bu analiz tarihi gerçeklerle uyuşuyor mu?</div>
+            <div class="feedback-question" id="feedback-q">📜 Bu analiz tarihi gerçeklerle uyuşuyor mu?</div>
             <div class="feedback-buttons">
                 <button id="btn-yes" class="btn-yes" onclick="giveFeedback(true)">✔ DOĞRU</button>
                 <button id="btn-no" class="btn-no" onclick="giveFeedback(false)">✖ HATALI</button>
@@ -384,27 +426,26 @@
         <div class="feedback-invite-card">
             <div class="invite-icon">✨</div>
             <div class="invite-text">
-                <h3>Görüşleriniz Bizim İçin Değerli</h3>
-                <p>Archazam'ı geliştirmemiz için geri bildiriminizi bekliyoruz. Bir hata gördüyseniz veya öneriniz varsa lütfen paylaşın.</p>
+                <h3 id="invite-title">Görüşleriniz Bizim İçin Değerli</h3>
             </div>
             <button class="contact-pulse-btn" onclick="toggleContactForm()">
-                ✒️ Bize Yazın
+                <span id="btn-contact-text">✒️ Bize Yazın</span>
             </button>
         </div>
         
         <div id="contact-form-container">
-            <h3 style="margin-top:0; color:var(--text-dark); font-family:'Cinzel', serif; text-align:center;">
+            <h3 style="margin-top:0; color:var(--text-dark); font-family:'Cinzel', serif; text-align:center;" id="form-title">
                 📝 İletişim Formu
             </h3>
             
             <form action="https://formspree.io/f/mwvpwzzj" method="POST">
-                <label style="font-weight:bold; font-size:0.9rem;">E-postanız (İsteğe bağlı):</label>
+                <label style="font-weight:bold; font-size:0.9rem;" id="lbl-email">E-postanız (İsteğe bağlı):</label>
                 <input type="email" name="email" class="form-input" placeholder="ornek@okul.com">
                 
-                <label style="font-weight:bold; font-size:0.9rem;">Mesajınız:</label>
-                <textarea name="message" class="form-textarea" rows="4" placeholder="Fikirlerinizi buraya yazabilirsiniz..."></textarea>
+                <label style="font-weight:bold; font-size:0.9rem;" id="lbl-msg">Mesajınız:</label>
+                <textarea name="message" class="form-textarea" rows="4" placeholder="..."></textarea>
                 
-                <button type="submit" class="form-submit-btn">GÖNDER</button>
+                <button type="submit" class="form-submit-btn" id="btn-send">GÖNDER</button>
             </form>
         </div>
 
@@ -414,11 +455,94 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // OTOMATİK İSİM ÇEKME MODU
+        // DİL AYARLARI
+        let currentLang = 'tr';
+        
+        const translations = {
+            'tr': {
+                'subtitle-text': 'Eski Medeniyetlerin İzinde...',
+                'instruction-main': '⚠️ Sistem şu an <strong>SADECE</strong> aşağıdaki medeniyetleri tanır:',
+                'list-1': 'Antik Yunan',
+                'list-2': 'Osmanlı (İznik)',
+                'list-3': 'Hitit',
+                'list-4': 'Sümer (Mezopotamya)',
+                'list-5': 'Nazca (Peru)',
+                'loading-msg': '🏺 Model sandıktan çıkarılıyor, bekleyin...',
+                'btn-cam-text': '📷 Fotoğraf Çek',
+                'btn-upload-text': '📂 Dosyadan Yükle',
+                'placeholder-text': '🔍 Eseri yükleyiniz.',
+                'feedback-q': '📜 Bu analiz tarihi gerçeklerle uyuşuyor mu?',
+                'btn-yes': '✔ DOĞRU',
+                'btn-no': '✖ HATALI',
+                'invite-title': 'Görüşleriniz Bizim İçin Değerli',
+                'btn-contact-text': '✒️ Bize Yazın',
+                'form-title': '📝 İletişim Formu',
+                'lbl-email': 'E-postanız (İsteğe bağlı):',
+                'lbl-msg': 'Mesajınız:',
+                'btn-send': 'GÖNDER'
+            },
+            'en': {
+                'subtitle-text': 'Tracing Ancient Civilizations...',
+                'instruction-main': '⚠️ The system currently <strong>ONLY</strong> recognizes:',
+                'list-1': 'Ancient Greek',
+                'list-2': 'Ottoman (Iznik)',
+                'list-3': 'Hittite',
+                'list-4': 'Sumerian (Mesopotamia)',
+                'list-5': 'Nazca (Peru)',
+                'loading-msg': '🏺 Excavating the model, please wait...',
+                'btn-cam-text': '📷 Take Photo',
+                'btn-upload-text': '📂 Upload File',
+                'placeholder-text': '🔍 Upload an artifact.',
+                'feedback-q': '📜 Is this analysis historically accurate?',
+                'btn-yes': '✔ CORRECT',
+                'btn-no': '✖ WRONG',
+                'invite-title': 'We Value Your Feedback',
+                'btn-contact-text': '✒️ Contact Us',
+                'form-title': '📝 Contact Form',
+                'lbl-email': 'Your Email (Optional):',
+                'lbl-msg': 'Your Message:',
+                'btn-send': 'SEND'
+            }
+        };
+
+        // Model Sınıflarının Çevirisi (Anahtar kelimeye göre)
+        function getTranslatedClassName(originalName, lang) {
+            if (lang === 'tr') return originalName; // Zaten Türkçe varsayıyoruz veya model ne verirse o.
+
+            // Basit kelime eşleştirme ile çeviri
+            const lower = originalName.toLowerCase();
+            if (lower.includes('yunan') || lower.includes('greek')) return 'Ancient Greek Pottery';
+            if (lower.includes('iznik') || lower.includes('osmanlı') || lower.includes('ottoman')) return 'Ottoman Iznik Pottery';
+            if (lower.includes('hitit') || lower.includes('hittite')) return 'Hittite Pottery';
+            if (lower.includes('sümer') || lower.includes('sumer') || lower.includes('çin') || lower.includes('china')) return 'Sumerian Pottery';
+            if (lower.includes('nazca')) return 'Nazca Pottery';
+            
+            return originalName; // Eşleşmezse aynen döndür
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'tr' ? 'en' : 'tr';
+            document.getElementById('lang-btn').innerText = currentLang === 'tr' ? 'EN' : 'TR';
+            
+            // Tüm metinleri güncelle
+            const t = translations[currentLang];
+            for (const [id, text] of Object.entries(t)) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = text; // innerHTML kullandık ki strong etiketleri çalışsın
+            }
+
+            // Eğer ekranda sonuç varsa onları da güncelle
+            if (lastPrediction) {
+                updateBars(lastPrediction);
+            }
+        }
+
+        // --- MODEL KISMI ---
         const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
 
         let model, webcam, labelContainer, maxPredictions;
         let isModelLoading = false;
+        let lastPrediction = null; // Dil değişince yeniden çizmek için
 
         async function loadModel() {
             if (model || isModelLoading) return;
@@ -446,7 +570,7 @@
                     labelContainer.appendChild(div);
                 }
             } catch (error) {
-                alert("Model yüklenirken hata oluştu.");
+                alert("Model hatası / Model Error");
             }
             isModelLoading = false;
             document.getElementById("loading-msg").style.display = "none";
@@ -496,13 +620,21 @@
         async function predictImage(imageElement) { const prediction = await model.predict(imageElement); updateBars(prediction); }
 
         function updateBars(prediction) {
+            lastPrediction = prediction; // Kaydet
             for (let i = 0; i < maxPredictions; i++) {
                 const nameSpan = document.getElementById(`label-name-${i}`);
                 const probSpan = document.getElementById(`label-prob-${i}`);
                 const progressBar = document.getElementById(`progress-${i}`);
+                
+                // DİL KONTROLÜ VE ÇEVİRİ
+                let displayName = prediction[i].className;
+                if(currentLang === 'en') {
+                    displayName = getTranslatedClassName(displayName, 'en');
+                }
+
                 const probability = prediction[i].probability.toFixed(2);
                 const percent = Math.round(probability * 100) + "%";
-                nameSpan.innerHTML = prediction[i].className;
+                nameSpan.innerHTML = displayName;
                 probSpan.innerHTML = percent;
                 progressBar.style.width = percent;
             }
@@ -521,10 +653,10 @@
             document.getElementById("btn-no").disabled = true;
             if (isCorrect) {
                 messageArea.style.color = "#2e7d32";
-                messageArea.innerText = "✔ Katkınız için teşekkürler! Veri doğrulandı.";
+                messageArea.innerText = currentLang === 'tr' ? "✔ Katkınız için teşekkürler!" : "✔ Thanks for your contribution!";
             } else {
                 messageArea.style.color = "#c62828";
-                messageArea.innerText = "✖ Geri bildirim alındı. Sistem güncellenecek.";
+                messageArea.innerText = currentLang === 'tr' ? "✖ Geri bildirim alındı." : "✖ Feedback received.";
             }
         }
 
@@ -539,3 +671,5 @@
     </script>
 </body>
 </html>
+
+```
