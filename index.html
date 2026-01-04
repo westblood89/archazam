@@ -1,16 +1,3 @@
-Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanımlayamam, sadece bu 5 tanesini biliyorum" demek, beklentiyi yönetir ve uygulamanın hatalı sanılmasını engeller. Yabancı takımlar için de dil desteği (TR/EN) eklemek projeyi çok profesyonel gösterir.
-
-İstediğin tüm değişiklikleri tek bir kodda birleştirdim:
-
-1. **Dil Değiştirme (TR | EN):** Sağ üst köşeye şık bir buton ekledim. Tıklayınca tüm metinler ve **sonuçlardaki sınıf isimleri** İngilizceye/Türkçeye dönüyor.
-2. **Büyüteç İkonu:** Başlıktaki müze simgesi gitti, yerine dedektif büyüteci (🧐) geldi.
-3. **Açıklayıcı Yönerge:** Başlığın altına, sistemin sadece 5 medeniyeti tanıdığını belirten bir uyarı metni ve medeniyet listesi ekledim.
-4. **Sadeleştirilmiş Geri Bildirim:** O uzun cümleyi sildim. Sadece başlık ve yanıp sönen buton kaldı.
-5. **Garantili İkonlar:** Tüm butonlarda emojiler sol tarafta.
-
-İşte ARCHAZAM'ın Uluslararası Sürümü:
-
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -21,12 +8,12 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
     
     <style>
         :root {
-            --bg-paper: #fdf5e6;
-            --primary-clay: #8d6e63;
-            --accent-gold: #d4af37;
-            --text-dark: #3e2723;
-            --museum-green: #2e7d32;
-            --ruin-red: #c62828;
+            --bg-paper: #fdf5e6;      /* Eski kağıt */
+            --primary-clay: #8d6e63;  /* Pişmiş toprak */
+            --accent-gold: #d4af37;   /* Altın */
+            --text-dark: #3e2723;     /* Koyu kahve */
+            --museum-green: #2e7d32;  /* Onay yeşili */
+            --ruin-red: #c62828;      /* Hata kırmızısı */
         }
 
         body {
@@ -52,11 +39,12 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             outline: 6px solid var(--accent-gold); 
             box-shadow: 0 15px 30px rgba(62, 39, 35, 0.3);
             text-align: center;
-            max-width: 600px;
+            max-width: 650px; /* Genişliği biraz artırdım, liste rahat sığsın */
             width: 100%;
             position: relative;
         }
 
+        /* Köşe Süslemeleri */
         .container::before, .container::after {
             content: '☩';
             position: absolute;
@@ -66,20 +54,20 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
         .container::before { top: 10px; left: 10px; }
         .container::after { top: 10px; right: 10px; }
 
-        /* Dil Butonu (Sağ Üst) */
+        /* DİL BUTONU (Sağ Üst) */
         #lang-btn {
             position: absolute;
-            top: 10px;
-            right: 40px; /* Süslemeden biraz içeride */
+            top: 15px;
+            right: 40px;
             background-color: var(--text-dark);
             color: var(--accent-gold);
             border: 1px solid var(--accent-gold);
-            padding: 5px 10px;
+            padding: 6px 12px;
             font-family: 'Cinzel', serif;
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             transition: all 0.3s;
             z-index: 100;
         }
@@ -88,6 +76,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             color: var(--text-dark);
         }
 
+        /* BAŞLIK (Yanında logo yok) */
         h1 {
             font-family: 'Cinzel', serif;
             margin-bottom: 0.5rem;
@@ -95,7 +84,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             font-size: 2.8rem;
             text-shadow: 2px 2px 0px var(--accent-gold);
             letter-spacing: 2px;
-            margin-top: 10px;
+            margin-top: 20px;
             border-bottom: 2px solid var(--primary-clay);
             display: inline-block;
             padding-bottom: 10px;
@@ -103,26 +92,59 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
         
         p.subtitle {
             color: #6d4c41;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-style: italic;
             font-size: 1.1rem;
         }
 
-        /* Yönerge Kutusu */
-        .instruction-box {
-            background-color: rgba(141, 110, 99, 0.1);
-            border-left: 4px solid var(--accent-gold);
-            padding: 10px 15px;
+        /* YENİ YÖNERGE KUTUSU */
+        .instruction-container {
+            background-color: rgba(141, 110, 99, 0.08);
+            border: 1px dashed var(--primary-clay);
+            border-radius: 8px;
+            padding: 15px;
             margin-bottom: 25px;
-            text-align: left;
-            font-size: 0.95rem;
-            color: #4e342e;
+            text-align: center;
         }
-        
-        .instruction-box strong {
+
+        .instruction-text {
+            font-size: 1rem;
+            margin-bottom: 10px;
             color: var(--text-dark);
         }
 
+        .warning-text {
+            font-size: 0.9rem;
+            color: #b71c1c; /* Uyarı kırmızımsı */
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Yan Yana Medeniyet Listesi */
+        .civ-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .civ-tag {
+            background-color: #fff;
+            border: 1px solid var(--accent-gold);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* BUTONLAR */
         .button-group {
             display: flex;
             justify-content: center;
@@ -155,6 +177,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             box-shadow: 0 2px 0 #281815;
         }
         
+        /* Görüntü Alanı */
         #visual-area {
             margin-top: 10px;
             border-radius: 4px;
@@ -189,6 +212,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
 
         canvas { z-index: 20; }
 
+        /* Sonuç Çubukları */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -221,6 +245,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
+        /* Doğrulama Alanı */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -276,7 +301,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             border-radius: 4px;
         }
 
-        /* Davet Kartı ve İletişim Formu */
+        /* DAVET KARTI */
         .feedback-invite-card {
             margin-top: 40px;
             background-color: rgba(212, 175, 55, 0.1);
@@ -327,6 +352,7 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
             animation: none;
         }
 
+        /* İLETİŞİM FORMU */
         #contact-form-container {
             display: none;
             margin-top: 20px;
@@ -381,18 +407,23 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
     <div class="container">
         <button id="lang-btn" onclick="toggleLanguage()">EN</button>
 
-        <h1>ARCHAZAM 🧐</h1>
+        <h1>ARCHAZAM</h1>
         <p class="subtitle" id="subtitle-text">Eski Medeniyetlerin İzinde...</p>
         
-        <div class="instruction-box">
-            <span id="instruction-main">⚠️ Sistem şu an <strong>SADECE</strong> aşağıdaki medeniyetleri tanır:</span>
-            <ul style="margin: 5px 0 0 20px; padding: 0;">
-                <li id="list-1">Antik Yunan</li>
-                <li id="list-2">Osmanlı (İznik)</li>
-                <li id="list-3">Hitit</li>
-                <li id="list-4">Sümer (Mezopotamya)</li>
-                <li id="list-5">Nazca (Peru)</li>
-            </ul>
+        <div class="instruction-container">
+            <div class="instruction-text" id="instr-text">
+                Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.
+            </div>
+            <span class="warning-text" id="warn-text">
+                ⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:
+            </span>
+            <div class="civ-list">
+                <span class="civ-tag" id="civ-1">🏛️ Antik Yunan Seramiği</span>
+                <span class="civ-tag" id="civ-2">🌷 Osmanlı İznik Çinisi</span>
+                <span class="civ-tag" id="civ-3">🦁 Hitit Seramiği</span>
+                <span class="civ-tag" id="civ-4">🧱 Sümer Seramiği</span>
+                <span class="civ-tag" id="civ-5">🦅 Nazca (Peru) Seramiği</span>
+            </div>
         </div>
         
         <div id="loading-msg">🏺 Model sandıktan çıkarılıyor, bekleyin...</div>
@@ -455,19 +486,19 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
-        // DİL AYARLARI
+        // DİL YÖNETİMİ
         let currentLang = 'tr';
         
         const translations = {
             'tr': {
                 'subtitle-text': 'Eski Medeniyetlerin İzinde...',
-                'instruction-main': '⚠️ Sistem şu an <strong>SADECE</strong> aşağıdaki medeniyetleri tanır:',
-                'list-1': 'Antik Yunan',
-                'list-2': 'Osmanlı (İznik)',
-                'list-3': 'Hitit',
-                'list-4': 'Sümer (Mezopotamya)',
-                'list-5': 'Nazca (Peru)',
-                'loading-msg': '🏺 Model sandıktan çıkarılıyor, bekleyin...',
+                'instr-text': 'Tarihi eseri tanımlamak için fotoğrafını çekin veya cihazınızdan yükleyin. Yapay zeka saniyeler içinde analiz etsin.',
+                'warn-text': '⚠️ Sistem şu an <strong>sadece</strong> aşağıdaki medeniyetleri tanır:',
+                'civ-1': '🏛️ Antik Yunan Seramiği',
+                'civ-2': '🌷 Osmanlı İznik Çinisi',
+                'civ-3': '🦁 Hitit Seramiği',
+                'civ-4': '🧱 Sümer Seramiği',
+                'civ-5': '🦅 Nazca (Peru) Seramiği',
                 'btn-cam-text': '📷 Fotoğraf Çek',
                 'btn-upload-text': '📂 Dosyadan Yükle',
                 'placeholder-text': '🔍 Eseri yükleyiniz.',
@@ -479,17 +510,18 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
                 'form-title': '📝 İletişim Formu',
                 'lbl-email': 'E-postanız (İsteğe bağlı):',
                 'lbl-msg': 'Mesajınız:',
-                'btn-send': 'GÖNDER'
+                'btn-send': 'GÖNDER',
+                'loading-msg': '🏺 Model sandıktan çıkarılıyor, bekleyin...'
             },
             'en': {
                 'subtitle-text': 'Tracing Ancient Civilizations...',
-                'instruction-main': '⚠️ The system currently <strong>ONLY</strong> recognizes:',
-                'list-1': 'Ancient Greek',
-                'list-2': 'Ottoman (Iznik)',
-                'list-3': 'Hittite',
-                'list-4': 'Sumerian (Mesopotamia)',
-                'list-5': 'Nazca (Peru)',
-                'loading-msg': '🏺 Excavating the model, please wait...',
+                'instr-text': 'Take a photo or upload one from your device to identify the historical artifact. AI analyzes it in seconds.',
+                'warn-text': '⚠️ The system currently <strong>only</strong> recognizes the following civilizations:',
+                'civ-1': '🏛️ Ancient Greek Pottery',
+                'civ-2': '🌷 Ottoman Iznik Pottery',
+                'civ-3': '🦁 Hittite Pottery',
+                'civ-4': '🧱 Sumerian Pottery',
+                'civ-5': '🦅 Nazca (Peru) Pottery',
                 'btn-cam-text': '📷 Take Photo',
                 'btn-upload-text': '📂 Upload File',
                 'placeholder-text': '🔍 Upload an artifact.',
@@ -501,48 +533,46 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
                 'form-title': '📝 Contact Form',
                 'lbl-email': 'Your Email (Optional):',
                 'lbl-msg': 'Your Message:',
-                'btn-send': 'SEND'
+                'btn-send': 'SEND',
+                'loading-msg': '🏺 Excavating the model, please wait...'
             }
         };
 
-        // Model Sınıflarının Çevirisi (Anahtar kelimeye göre)
         function getTranslatedClassName(originalName, lang) {
-            if (lang === 'tr') return originalName; // Zaten Türkçe varsayıyoruz veya model ne verirse o.
+            if (lang === 'tr') return originalName;
 
-            // Basit kelime eşleştirme ile çeviri
             const lower = originalName.toLowerCase();
+            // Türkçe -> İngilizce Eşleştirme
             if (lower.includes('yunan') || lower.includes('greek')) return 'Ancient Greek Pottery';
             if (lower.includes('iznik') || lower.includes('osmanlı') || lower.includes('ottoman')) return 'Ottoman Iznik Pottery';
             if (lower.includes('hitit') || lower.includes('hittite')) return 'Hittite Pottery';
             if (lower.includes('sümer') || lower.includes('sumer') || lower.includes('çin') || lower.includes('china')) return 'Sumerian Pottery';
-            if (lower.includes('nazca')) return 'Nazca Pottery';
+            if (lower.includes('nazca')) return 'Nazca (Peru) Pottery';
             
-            return originalName; // Eşleşmezse aynen döndür
+            return originalName; 
         }
 
         function toggleLanguage() {
             currentLang = currentLang === 'tr' ? 'en' : 'tr';
             document.getElementById('lang-btn').innerText = currentLang === 'tr' ? 'EN' : 'TR';
             
-            // Tüm metinleri güncelle
             const t = translations[currentLang];
             for (const [id, text] of Object.entries(t)) {
                 const el = document.getElementById(id);
-                if (el) el.innerHTML = text; // innerHTML kullandık ki strong etiketleri çalışsın
+                if (el) el.innerHTML = text;
             }
 
-            // Eğer ekranda sonuç varsa onları da güncelle
             if (lastPrediction) {
                 updateBars(lastPrediction);
             }
         }
 
-        // --- MODEL KISMI ---
+        // --- MODEL & JS ---
         const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
 
         let model, webcam, labelContainer, maxPredictions;
         let isModelLoading = false;
-        let lastPrediction = null; // Dil değişince yeniden çizmek için
+        let lastPrediction = null;
 
         async function loadModel() {
             if (model || isModelLoading) return;
@@ -620,13 +650,12 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
         async function predictImage(imageElement) { const prediction = await model.predict(imageElement); updateBars(prediction); }
 
         function updateBars(prediction) {
-            lastPrediction = prediction; // Kaydet
+            lastPrediction = prediction;
             for (let i = 0; i < maxPredictions; i++) {
                 const nameSpan = document.getElementById(`label-name-${i}`);
                 const probSpan = document.getElementById(`label-prob-${i}`);
                 const progressBar = document.getElementById(`progress-${i}`);
                 
-                // DİL KONTROLÜ VE ÇEVİRİ
                 let displayName = prediction[i].className;
                 if(currentLang === 'en') {
                     displayName = getTranslatedClassName(displayName, 'en');
@@ -671,5 +700,3 @@ Harika bir UX (Kullanıcı Deneyimi) stratejisi. Kullanıcıya "Her şeyi tanım
     </script>
 </body>
 </html>
-
-```
