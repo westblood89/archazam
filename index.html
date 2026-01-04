@@ -80,6 +80,7 @@
             margin-bottom: 25px;
         }
 
+        /* Hem button hem de label için ortak stil */
         .action-btn {
             background-color: var(--text-dark);
             color: var(--accent-gold);
@@ -93,6 +94,8 @@
             font-weight: 700;
             text-transform: uppercase;
             box-shadow: 0 4px 0 #281815;
+            display: inline-block; /* Label'ın buton gibi durması için */
+            text-align: center;
         }
 
         .action-btn:hover {
@@ -223,8 +226,6 @@
         }
 
         /* --- YENİLENEN İLETİŞİM ALANI --- */
-        
-        /* Animasyon Tanımı */
         @keyframes pulse-gold {
             0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); transform: scale(1); }
             70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); transform: scale(1.02); }
@@ -232,9 +233,9 @@
         }
 
         .contact-toggle {
-            margin-top: 40px; /* Biraz daha aşağıya alıp ayırdık */
-            background-color: var(--text-dark); /* Koyu zemin */
-            color: var(--accent-gold); /* Altın yazı */
+            margin-top: 40px;
+            background-color: var(--text-dark);
+            color: var(--accent-gold);
             border: 2px solid var(--accent-gold);
             padding: 12px 20px;
             text-decoration: none;
@@ -242,18 +243,16 @@
             font-size: 1rem;
             font-weight: bold;
             font-family: 'Cinzel', serif;
-            border-radius: 50px; /* Yuvarlak hatlı */
+            border-radius: 50px;
             display: inline-block;
             transition: all 0.3s ease;
-            
-            /* DİKKAT ÇEKİCİ ANİMASYON */
             animation: pulse-gold 2s infinite;
         }
 
         .contact-toggle:hover {
             background-color: var(--accent-gold);
             color: var(--text-dark);
-            animation: none; /* Üzerine gelince dursun */
+            animation: none;
         }
 
         #contact-form-container {
@@ -261,13 +260,12 @@
             margin-top: 20px;
             padding: 20px;
             background-color: #fff8e1;
-            border: 3px double var(--primary-clay); /* Daha vurgulu çerçeve */
+            border: 3px double var(--primary-clay);
             border-radius: 8px;
             text-align: left;
             position: relative;
         }
         
-        /* Formun üstüne küçük bir ok işareti */
         #contact-form-container::after {
             content: '';
             position: absolute;
@@ -296,7 +294,7 @@
             border: none;
             padding: 12px 20px;
             font-family: 'Cinzel', serif;
-            font-weight: 900; /* Daha kalın yazı */
+            font-weight: 900;
             cursor: pointer;
             width: 100%;
             font-size: 1.1rem;
@@ -318,8 +316,9 @@
         <div id="loading-msg">🏺 Model sandıktan çıkarılıyor, bekleyin...</div>
 
         <div class="button-group">
-            <button class="action-btn" onclick="init()">🎥 Canlı Keşif</button>
-            <button class="action-btn" onclick="document.getElementById('imageUpload').click()">🖼️ Eser Yükle</button>
+            <button class="action-btn" onclick="init()">📷 Fotoğraf Çek </button>
+            
+            <label for="imageUpload" class="action-btn">📂 Dosyadan Yükle </label>
             <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
         </div>
 
@@ -338,3 +337,158 @@
             </div>
             <div id="feedback-message"></div>
         </div>
+
+        <button class="contact-toggle" onclick="toggleContactForm()">
+            📩 Hata Bildir / Bize Ulaşın 📩
+        </button>
+        
+        <div id="contact-form-container">
+            <h3 style="margin-top:0; color:var(--text-dark); font-family:'Cinzel', serif; text-align:center;">
+                📝 Geri Bildirim Formu
+            </h3>
+            <p style="font-size:0.9rem; text-align:center; color:#666; margin-bottom:15px;">
+                Sistemde bir hata mı buldunuz? Bize yazın, geliştirelim.
+            </p>
+            
+            <form action="https://formspree.io/f/mwvpwzzj" method="POST">
+                
+                <label style="font-weight:bold; font-size:0.9rem;">E-postanız (İsteğe bağlı):</label>
+                <input type="email" name="email" class="form-input" placeholder="ornek@okul.com">
+                
+                <label style="font-weight:bold; font-size:0.9rem;">Mesajınız:</label>
+                <textarea name="message" class="form-textarea" rows="4" placeholder="Hata detayı veya öneriniz..."></textarea>
+                
+                <button type="submit" class="form-submit-btn">GÖNDER</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <script type="text/javascript">
+        const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
+
+        let model, webcam, labelContainer, maxPredictions;
+        let isModelLoading = false;
+
+        async function loadModel() {
+            if (model || isModelLoading) return;
+            isModelLoading = true;
+            document.getElementById("loading-msg").style.display = "block";
+            try {
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = "";
+                for (let i = 0; i < maxPredictions; i++) {
+                    let div = document.createElement("div");
+                    div.className = "prediction-item";
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span id="label-name-${i}">Sınıf ${i}</span>
+                            <span id="label-prob-${i}">%0</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="progress-${i}" class="progress-bar-fill"></div>
+                        </div>
+                    `;
+                    labelContainer.appendChild(div);
+                }
+            } catch (error) {
+                alert("Model yüklenirken hata oluştu.");
+            }
+            isModelLoading = false;
+            document.getElementById("loading-msg").style.display = "none";
+        }
+
+        async function init() {
+            await loadModel();
+            document.getElementById("placeholder-text").style.display = "none";
+            document.getElementById("uploaded-image").style.display = "none";
+            const container = document.getElementById("visual-area");
+            const oldCanvas = container.querySelector("canvas");
+            if(oldCanvas) oldCanvas.remove();
+            const flip = true; 
+            webcam = new tmImage.Webcam(300, 300, flip); 
+            await webcam.setup(); 
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+            container.appendChild(webcam.canvas);
+            resetFeedback();
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function handleImageUpload(event) {
+            await loadModel();
+            if(webcam) { await webcam.stop(); webcam = null; const container = document.getElementById("visual-area"); const canvas = container.querySelector("canvas"); if(canvas) canvas.remove(); }
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("placeholder-text").style.display = "none";
+                    const imgElement = document.getElementById("uploaded-image");
+                    imgElement.src = e.target.result;
+                    imgElement.style.display = "block";
+                    imgElement.onload = async function() { await predictImage(imgElement); }
+                    resetFeedback();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function predict() { if(webcam && webcam.canvas) { const prediction = await model.predict(webcam.canvas); updateBars(prediction); } }
+        async function predictImage(imageElement) { const prediction = await model.predict(imageElement); updateBars(prediction); }
+
+        function updateBars(prediction) {
+            for (let i = 0; i < maxPredictions; i++) {
+                const nameSpan = document.getElementById(`label-name-${i}`);
+                const probSpan = document.getElementById(`label-prob-${i}`);
+                const progressBar = document.getElementById(`progress-${i}`);
+                const probability = prediction[i].probability.toFixed(2);
+                const percent = Math.round(probability * 100) + "%";
+                nameSpan.innerHTML = prediction[i].className;
+                probSpan.innerHTML = percent;
+                progressBar.style.width = percent;
+            }
+        }
+
+        function resetFeedback() {
+            document.getElementById("feedback-section").style.display = "block";
+            document.getElementById("feedback-message").innerText = "";
+            document.getElementById("btn-yes").disabled = false;
+            document.getElementById("btn-no").disabled = false;
+        }
+
+        function giveFeedback(isCorrect) {
+            const messageArea = document.getElementById("feedback-message");
+            document.getElementById("btn-yes").disabled = true;
+            document.getElementById("btn-no").disabled = true;
+            if (isCorrect) {
+                messageArea.style.color = "#2e7d32";
+                messageArea.innerText = "✔ Katkınız için teşekkürler! Veri doğrulandı.";
+            } else {
+                messageArea.style.color = "#c62828";
+                messageArea.innerText = "✖ Geri bildirim alındı. Sistem güncellenecek.";
+            }
+        }
+
+        function toggleContactForm() {
+            const formContainer = document.getElementById("contact-form-container");
+            if (formContainer.style.display === "none" || formContainer.style.display === "") {
+                formContainer.style.display = "block";
+            } else {
+                formContainer.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
