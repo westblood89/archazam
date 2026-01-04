@@ -8,18 +8,19 @@
     
     <style>
         :root {
-            --bg-paper: #fdf5e6;
-            --primary-clay: #8d6e63;
-            --accent-gold: #d4af37;
-            --text-dark: #3e2723;
-            --museum-green: #2e7d32;
-            --ruin-red: #c62828;
+            --bg-paper: #fdf5e6;      /* Eski kağıt */
+            --primary-clay: #8d6e63;  /* Pişmiş toprak */
+            --accent-gold: #d4af37;   /* Altın */
+            --text-dark: #3e2723;     /* Koyu kahve */
+            --museum-green: #2e7d32;  /* Onay yeşili */
+            --ruin-red: #c62828;      /* Hata kırmızısı */
         }
 
         body {
             font-family: 'Lato', sans-serif;
             background-color: var(--bg-paper);
             color: var(--text-dark);
+            /* Arka plan dokusu */
             background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
             background-size: 20px 20px;
             display: flex;
@@ -35,6 +36,7 @@
             background-color: #fff8e1;
             padding: 2.5rem;
             border-radius: 4px;
+            /* Çift çerçeve efekti */
             border: 2px solid var(--primary-clay);
             outline: 6px solid var(--accent-gold); 
             box-shadow: 0 15px 30px rgba(62, 39, 35, 0.3);
@@ -44,6 +46,7 @@
             position: relative;
         }
 
+        /* Köşe süslemeleri */
         .container::before, .container::after {
             content: '☩';
             position: absolute;
@@ -73,6 +76,7 @@
             font-size: 1.1rem;
         }
 
+        /* --- BUTONLAR --- */
         .button-group {
             display: flex;
             justify-content: center;
@@ -80,7 +84,6 @@
             margin-bottom: 25px;
         }
 
-        /* Hem button hem de label için ortak stil */
         .action-btn {
             background-color: var(--text-dark);
             color: var(--accent-gold);
@@ -94,8 +97,10 @@
             font-weight: 700;
             text-transform: uppercase;
             box-shadow: 0 4px 0 #281815;
-            display: inline-block; /* Label'ın buton gibi durması için */
-            text-align: center;
+            display: inline-flex; /* İkon ve yazıyı hizalamak için */
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
         }
 
         .action-btn:hover {
@@ -104,6 +109,7 @@
             box-shadow: 0 2px 0 #281815;
         }
         
+        /* Görüntü Alanı */
         #visual-area {
             margin-top: 10px;
             border-radius: 4px;
@@ -137,6 +143,7 @@
 
         canvas { z-index: 20; }
 
+        /* Sonuç Çubukları */
         #label-container {
             margin-top: 25px;
             text-align: left;
@@ -169,7 +176,7 @@
             transition: width 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
-        /* Doğrulama Alanı */
+        /* --- DOĞRULAMA ALANI --- */
         .feedback-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -225,36 +232,68 @@
             border-radius: 4px;
         }
 
-        /* --- YENİLENEN İLETİŞİM ALANI --- */
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); transform: scale(1); }
-            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); transform: scale(1.02); }
-            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); transform: scale(1); }
-        }
-
-        .contact-toggle {
+        /* --- YENİ DAVET KARTI & BUTON STİLİ --- */
+        .feedback-invite-card {
             margin-top: 40px;
-            background-color: var(--text-dark);
-            color: var(--accent-gold);
-            border: 2px solid var(--accent-gold);
-            padding: 12px 20px;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            font-family: 'Cinzel', serif;
-            border-radius: 50px;
-            display: inline-block;
-            transition: all 0.3s ease;
-            animation: pulse-gold 2s infinite;
+            background-color: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent-gold);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .contact-toggle:hover {
-            background-color: var(--accent-gold);
+        .invite-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .invite-text h3 {
+            font-family: 'Cinzel', serif;
+            margin: 0 0 5px 0;
             color: var(--text-dark);
+            font-size: 1.2rem;
+        }
+
+        .invite-text p {
+            margin: 0 0 15px 0;
+            font-size: 0.95rem;
+            color: #5d4037;
+        }
+
+        /* Yanıp Sönen Buton Animasyonu */
+        @keyframes subtle-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(141, 110, 99, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(141, 110, 99, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(141, 110, 99, 0); }
+        }
+
+        .contact-pulse-btn {
+            background-color: var(--primary-clay);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+            animation: subtle-pulse 2s infinite;
+        }
+
+        .contact-pulse-btn:hover {
+            background-color: var(--text-dark);
             animation: none;
         }
 
+        /* İletişim Formu */
         #contact-form-container {
             display: none;
             margin-top: 20px;
@@ -316,9 +355,13 @@
         <div id="loading-msg">🏺 Model sandıktan çıkarılıyor, bekleyin...</div>
 
         <div class="button-group">
-            <button class="action-btn" onclick="init()">📷 Fotoğraf Çek </button>
+            <button class="action-btn" onclick="init()">
+                📷 Fotoğraf Çek
+            </button>
             
-            <label for="imageUpload" class="action-btn">📂 Dosyadan Yükle </label>
+            <label for="imageUpload" class="action-btn">
+                📂 Dosyadan Yükle
+            </label>
             <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)" style="display: none;">
         </div>
 
@@ -338,25 +381,28 @@
             <div id="feedback-message"></div>
         </div>
 
-        <button class="contact-toggle" onclick="toggleContactForm()">
-            📩 Hata Bildir / Bize Ulaşın 📩
-        </button>
+        <div class="feedback-invite-card">
+            <div class="invite-icon">✨</div>
+            <div class="invite-text">
+                <h3>Görüşleriniz Bizim İçin Değerli</h3>
+                <p>Archazam'ı geliştirmemiz için geri bildiriminizi bekliyoruz. Bir hata gördüyseniz veya öneriniz varsa lütfen paylaşın.</p>
+            </div>
+            <button class="contact-pulse-btn" onclick="toggleContactForm()">
+                ✒️ Bize Yazın
+            </button>
+        </div>
         
         <div id="contact-form-container">
             <h3 style="margin-top:0; color:var(--text-dark); font-family:'Cinzel', serif; text-align:center;">
-                📝 Geri Bildirim Formu
+                📝 İletişim Formu
             </h3>
-            <p style="font-size:0.9rem; text-align:center; color:#666; margin-bottom:15px;">
-                Sistemde bir hata mı buldunuz? Bize yazın, geliştirelim.
-            </p>
             
             <form action="https://formspree.io/f/mwvpwzzj" method="POST">
-                
                 <label style="font-weight:bold; font-size:0.9rem;">E-postanız (İsteğe bağlı):</label>
                 <input type="email" name="email" class="form-input" placeholder="ornek@okul.com">
                 
                 <label style="font-weight:bold; font-size:0.9rem;">Mesajınız:</label>
-                <textarea name="message" class="form-textarea" rows="4" placeholder="Hata detayı veya öneriniz..."></textarea>
+                <textarea name="message" class="form-textarea" rows="4" placeholder="Fikirlerinizi buraya yazabilirsiniz..."></textarea>
                 
                 <button type="submit" class="form-submit-btn">GÖNDER</button>
             </form>
@@ -368,6 +414,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     
     <script type="text/javascript">
+        // OTOMATİK İSİM ÇEKME MODU
         const URL = "https://teachablemachine.withgoogle.com/models/Y2HlQGqEh/";
 
         let model, webcam, labelContainer, maxPredictions;
